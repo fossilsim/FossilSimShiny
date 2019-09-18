@@ -1,0 +1,135 @@
+library(shiny)
+
+#todo -- um, what is going on with the lognormal distribution? meanlog, sdlog
+#todo -- non-uniform makes the app crash - maybe to do with the above?
+#todo -- choose restrictions on parameter values more systematically, turnover, tip number, psi, meanlog, sdlog
+#todo -- how about a help button that says learn more about this model?
+
+# Input ----
+ui = fluidPage(
+  
+  # App title ----
+  titlePanel("Simulate fossils"),
+  
+  # Sidebar layout with input and output definitions ----
+  sidebarLayout(
+    
+    sidebarPanel(
+      
+      h3("Tree"),
+      
+      # reaction inputs
+      numericInput(inputId = "lambda", # input name
+                   label = "Speciation rate", # user instructions
+                   value = 0.1,
+                   min = 0, # input specific arguments
+                   max = 10 ),
+      
+      numericInput(inputId = "mu",
+                   label = "Extinction rate",
+                   value = 0.05,
+                   min = 0,
+                   max = 10 ),
+      
+      numericInput(inputId = "tips",
+                   label = "Tip number",
+                   value = 10,
+                   min = 0,
+                   max = 100 ),
+    
+      actionButton("newtree", "Simulate tree"),
+      
+      # "user tree" option --- 
+      checkboxInput(inputId = "usertree", "User tree", value = FALSE),
+      
+      textInput("newick", "User tree",
+                value = "Enter newick string..."),
+      
+      h3("Fossils"),
+      
+      tabsetPanel(id = "tabset", 
+                  tabPanel("Uniform",
+                           numericInput(inputId = "psi",
+                                        label = "Sampling rate",
+                                        value = 1,
+                                        min = 0,
+                                        max = 10 )
+                           ), 
+                  tabPanel("Non-uniform",
+                           sliderInput(inputId = "int",
+                                        label = "Number of intervals",
+                                        value = 1,
+                                        min = 0,
+                                        max = 10 ),
+                           numericInput(inputId = "meanlog",
+                                        label = "Mean sampling rate",
+                                        value = 1,
+                                        min = 0,
+                                        max = 10 ),
+                           numericInput(inputId = "sdlog",
+                                        label = "Variance",
+                                        value = 1,
+                                        min = 0,
+                                        max = 10 )
+                  )
+                  ),
+      
+      actionButton("newfossils", "Simulate fossils"),
+      
+      h3("Appearance"),
+      
+      checkboxInput(inputId = "showtree", "Show tree", value = TRUE),
+      checkboxInput(inputId = "showfossils", "Show all occurrences", value = TRUE),
+      checkboxInput(inputId = "showranges", "Show ranges", value = FALSE),
+      checkboxInput(inputId = "showstrata", "Show strata", value = FALSE)
+      
+    ),
+    
+    # Main panel for displaying outputs ----
+    mainPanel(
+      # reaction outputs
+      plotOutput(outputId = "tree") # has matching render function
+    )
+    
+  )
+)
+
+
+
+
+# contains plot instructions
+server <- function(input, output){
+  v <- reactiveValues(tree = NULL, fossils = FossilSim::fossils()) # decide how you want to inititalise the process, you could turn the tree stuff into a function
+  
+  observeEvent(input$newtree, {
+    if(input$usertree){ # to do: add some check here, e..g branch lengths
+      validate(need( !is.null(ape::read.tree(text = input$newick)) , "Specify newick string"))
+      v$tree = ape::read.tree(text = input$newick)
+    } else {
+      validate(need( ((input$mu/input$lambda) < 0.9), "Turnover a bit too high! Be kind to the server - try a lower extinction rate!"))
+      v$tree = TreeSim::sim.bd.taxa(input$tips, 1, input$lambda, input$mu)[[1]]
+    }
+    v$fossils = FossilSim::fossils()
+  })
+  
+  observeEvent(input$newfossils, {
+    if(input$tabset == "Uniform")
+      v$fossils = FossilSim::sim.fossils.poisson(tree = v$tree, rate = input$psi)
+    else if (input$tabset == "Non-uniform") {
+      max.age = FossilSim::tree.max(v$tree)
+      times = c(0, sort(runif(input$int-1, min = 0, max = max.age)), max.age)
+      rates = rlnorm(input$int, input$meanlog, input$sdlog)
+      v$fossils = FossilSim::sim.fossils.intervals(v$tree, interval.ages = times, rates = rates)
+    }
+  })
+  
+  output$tree <- renderPlot( {
+    if(is.null(v$tree)) return()
+    plot(v$fossils, v$tree, show.tree = input$showtree, show.ranges = input$showranges, 
+         show.fossils = input$showfossils, show.strata = input$showstrata, strata = input$int)
+  } )
+  
+}
+
+# Run the app ----
+shinyApp(ui = ui, server = server)
