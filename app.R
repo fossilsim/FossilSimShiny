@@ -1,9 +1,9 @@
 library(shiny)
 
-#todo -- error messages not working
-#todo -- non-uniform makes the app crash - maybe to do with the above?
+#todo -- return error if user tries to simulate fossils first
+#todo -- non-uniform sometimes makes the app crash - is this still an issue?
 #todo -- choose restrictions on parameter values more systematically, turnover, tip number, psi, meanlog, sdlog
-#todo: add some checks here, e..g branch lengths
+#todo -- add additional checks for newick trees, e..g branch lengths
 #todo -- how about a help button that says learn more about this model?
 
 # Input ----
