@@ -1,8 +1,9 @@
 library(shiny)
 
-#todo -- um, what is going on with the lognormal distribution? meanlog, sdlog
+#todo -- error messages not working
 #todo -- non-uniform makes the app crash - maybe to do with the above?
 #todo -- choose restrictions on parameter values more systematically, turnover, tip number, psi, meanlog, sdlog
+#todo: add some checks here, e..g branch lengths
 #todo -- how about a help button that says learn more about this model?
 
 # Input ----
@@ -61,12 +62,12 @@ ui = fluidPage(
                                         value = 1,
                                         min = 0,
                                         max = 10 ),
-                           numericInput(inputId = "meanlog",
+                           numericInput(inputId = "meanrate",
                                         label = "Mean sampling rate",
                                         value = 1,
                                         min = 0,
                                         max = 10 ),
-                           numericInput(inputId = "sdlog",
+                           numericInput(inputId = "variance",
                                         label = "Variance",
                                         value = 1,
                                         min = 0,
@@ -101,30 +102,36 @@ ui = fluidPage(
 server <- function(input, output){
   v <- reactiveValues(tree = NULL, fossils = FossilSim::fossils()) # decide how you want to inititalise the process, you could turn the tree stuff into a function
   
-  observeEvent(input$newtree, {
-    if(input$usertree){ # to do: add some check here, e..g branch lengths
-      validate(need( !is.null(ape::read.tree(text = input$newick)) , "Specify newick string"))
+  observeEvent(input$newtree,{
+    if(input$usertree){
       v$tree = ape::read.tree(text = input$newick)
     } else {
-      validate(need( ((input$mu/input$lambda) < 0.9), "Turnover a bit too high! Be kind to the server - try a lower extinction rate!"))
       v$tree = TreeSim::sim.bd.taxa(input$tips, 1, input$lambda, input$mu)[[1]]
     }
     v$fossils = FossilSim::fossils()
   })
   
+ 
   observeEvent(input$newfossils, {
+    if(is.null(v$tree)) return() # ideally this would return an error message
     if(input$tabset == "Uniform")
       v$fossils = FossilSim::sim.fossils.poisson(tree = v$tree, rate = input$psi)
     else if (input$tabset == "Non-uniform") {
       max.age = FossilSim::tree.max(v$tree)
       times = c(0, sort(runif(input$int-1, min = 0, max = max.age)), max.age)
-      rates = rlnorm(input$int, input$meanlog, input$sdlog)
+      rates = rlnorm(input$int, log(input$meanrate), sqrt(input$variance))
       v$fossils = FossilSim::sim.fossils.intervals(v$tree, interval.ages = times, rates = rates)
     }
   })
   
   output$tree <- renderPlot( {
+    
+    if(input$usertree) 
+      validate(need( !is.null(ape::read.tree(text = input$newick)) , "Specify newick string"))
+    else validate(need( ((input$mu/input$lambda) < 0.9), "Turnover a bit too high! Be kind to the server - try a lower extinction rate!"))
+    
     if(is.null(v$tree)) return()
+    
     plot(v$fossils, v$tree, show.tree = input$showtree, show.ranges = input$showranges, 
          show.fossils = input$showfossils, show.strata = input$showstrata, strata = input$int)
   } )
