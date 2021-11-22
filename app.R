@@ -1,10 +1,13 @@
 library(shiny)
 
 #todo -- return error if user tries to simulate fossils first
-#todo -- non-uniform sometimes makes the app crash - is this still an issue?
+#todo -- non-uniform sometimes makes the app crash - is this still an issue? -> don't think so
 #todo -- choose restrictions on parameter values more systematically, turnover, tip number, psi, meanlog, sdlog
-#todo -- add additional checks for newick trees, e..g branch lengths
+#todo -- add additional checks for newick trees, e.g. branch lengths
+#todo -- need an error for when you try to draw a reconstructed tree with only one sample
 #todo -- how about a help button that says learn more about this model?
+#todo -- option to plot complete and reconstructed tree alongside each other?
+#todo -- what about an option to output some of the simulated data? or specify the seed
 
 # Input ----
 ui = fluidPage(
@@ -38,12 +41,12 @@ ui = fluidPage(
                    min = 0,
                    max = 100 ),
     
-      actionButton("newtree", "Simulate tree"),
+      actionButton("simtree", "Simulate tree"),
       
       # "user tree" option --- 
       checkboxInput(inputId = "usertree", "User tree", value = FALSE),
       
-      textInput("newick", "User tree",
+      textInput(inputId = "newick", "User tree",
                 value = "Enter newick string..."),
       
       h3("Fossils"),
@@ -82,8 +85,9 @@ ui = fluidPage(
       checkboxInput(inputId = "showtree", "Show tree", value = TRUE),
       checkboxInput(inputId = "showfossils", "Show all occurrences", value = TRUE),
       checkboxInput(inputId = "showranges", "Show ranges", value = FALSE),
-      checkboxInput(inputId = "showstrata", "Show strata", value = FALSE)
-      
+      checkboxInput(inputId = "showstrata", "Show strata", value = FALSE),
+      checkboxInput(inputId = "showtips", "Show tips", value = FALSE),
+      checkboxInput(inputId = "reconstructed", "Show reconstructed tree", value = FALSE)
     ),
     
     # Main panel for displaying outputs ----
@@ -102,15 +106,15 @@ ui = fluidPage(
 server <- function(input, output){
   v <- reactiveValues(tree = NULL, fossils = FossilSim::fossils()) # decide how you want to inititalise the process, you could turn the tree stuff into a function
   
-  observeEvent(input$newtree,{
-    if(input$usertree){
-      v$tree = ape::read.tree(text = input$newick)
-    } else {
-      v$tree = TreeSim::sim.bd.taxa(input$tips, 1, input$lambda, input$mu)[[1]]
-    }
+  observeEvent(input$simtree,{
+    v$tree = TreeSim::sim.bd.taxa(input$tips, 1, input$lambda, input$mu)[[1]]
     v$fossils = FossilSim::fossils()
   })
   
+  observeEvent( c(input$usertree, input$newick),{
+    v$tree = ape::read.tree(text = input$newick)
+    v$fossils = FossilSim::fossils()
+  })  
  
   observeEvent(input$newfossils, {
     if(is.null(v$tree)) return() # ideally this would return an error message
@@ -133,7 +137,8 @@ server <- function(input, output){
     if(is.null(v$tree)) return()
     
     plot(v$fossils, v$tree, show.tree = input$showtree, show.ranges = input$showranges, 
-         show.fossils = input$showfossils, show.strata = input$showstrata, strata = input$int)
+         show.fossils = input$showfossils, show.strata = input$showstrata, strata = input$int,
+         reconstructed = input$reconstructed, show.tip.label = input$showtips, align.tip.label = TRUE)
   } )
   
 }
