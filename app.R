@@ -12,14 +12,23 @@ library(shiny)
 # Input ----
 ui = fluidPage(
   
+  # Import CSS for formatting ----
+  tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
+  
+  # App title for head ----
+  tags$head(HTML("<title>Simulate fossils with FossilSim</title>")),
+  
   # App title ----
-  titlePanel("Simulate fossils"),
+  titlePanel(
+    h1("Simulate fossils with FossilSim")
+  ),
   
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
     
     sidebarPanel(
       
+      # tree simulation inputs ---
       h3("Tree"),
       
       # reaction inputs
@@ -40,26 +49,45 @@ ui = fluidPage(
                    value = 10,
                    min = 0,
                    max = 100 ),
-    
+      
       actionButton("simtree", "Simulate tree"),
+    
+      
       
       # "user tree" option --- 
       checkboxInput(inputId = "usertree", "User tree", value = FALSE),
       
       textInput(inputId = "newick", "User tree",
                 value = "Enter newick string..."),
+     
+      # taxonomy inputs ---            
+      h3("Taxonomy"),
       
+      numericInput(inputId = "taxonomybeta", # input name
+                  label = "Probability of symmetric speciation", # user instructions
+                  value = 0.1,
+                  min = 0, # input specific arguments
+                  max = 10 ),
+      numericInput(inputId = "taxonomylambda", # input name
+                  label = "Rate of anagenesis", # user instructions
+                  value = 0.1,
+                  min = 0, # input specific arguments
+                  max = 10 ),
+      
+      actionButton("simtax", "Simulate taxonomy"),
+      
+      # fossil inputs ---
       h3("Fossils"),
       
       tabsetPanel(id = "tabset", 
-                  tabPanel("Uniform",
+                  tabPanel(p("Uniform", id = "uniform"),
                            numericInput(inputId = "psi",
                                         label = "Sampling rate",
                                         value = 1,
                                         min = 0,
                                         max = 10 )
                            ), 
-                  tabPanel("Non-uniform",
+                  tabPanel(p("Non-uniform", id = "non-uniform"),
                            sliderInput(inputId = "int",
                                         label = "Number of intervals",
                                         value = 1,
@@ -75,28 +103,75 @@ ui = fluidPage(
                                         value = 1,
                                         min = 0,
                                         max = 10 )
-                  )
-                  ),
+                           )
+                  
+      ),
       
       actionButton("newfossils", "Simulate fossils"),
+     
       
+      # Tree appearance toggles ---
       h3("Appearance"),
       
       checkboxInput(inputId = "showtree", "Show tree", value = TRUE),
+      checkboxInput(inputId = "showtaxonomy", "Show taxonomy", value = FALSE),
       checkboxInput(inputId = "showfossils", "Show all occurrences", value = TRUE),
       checkboxInput(inputId = "showranges", "Show ranges", value = FALSE),
       checkboxInput(inputId = "showstrata", "Show strata", value = FALSE),
       checkboxInput(inputId = "showtips", "Show tips", value = FALSE),
-      checkboxInput(inputId = "reconstructed", "Show reconstructed tree", value = FALSE)
+      checkboxInput(inputId = "reconstructed", "Show reconstructed tree", value = FALSE),
+      
+     
+      # Save Tree ---
+      h3("Save your Tree"),
+      
+      actionButton("saveas", "Save tree as image..."),
+      # Import Javascript for saveas functionality
+      tags$script(src = "saveas.js")
+      
     ),
     
-    # Main panel for displaying outputs ----
-    mainPanel(
-      # reaction outputs
-      plotOutput(outputId = "tree") # has matching render function
+    # Main panel for displaying outputs ---
+    fixedPanel(id="outputDisplay",
+      tabsetPanel(id = "tabset",
+        
+        # First panel : displays the tree
+        tabPanel(
+                p("Tree"),
+                
+                # reaction outputs
+                plotOutput(outputId = "tree", width = "100%", height = "85vh"), # has matching render function
+                
+                ),
+
+        # Second panel : displays the taxonomy
+        tabPanel(
+                p("Tax"),
+                
+                # reaction outputs
+                plotOutput(outputId = "tax", width = "100%", height = "85vh"), # has matching render function
+
+                )
+      ),
+      # Set size of output panel, todo: make it react to different screen resolution
+      left = "33%",
+      width = "67%"
     )
     
-  )
+  ),
+  
+  # Tooltip : info bar at the bottom of the application ----
+  fixedPanel(
+    p(id = "tooltip", "i : "),
+    
+    left = 0,
+    bottom = 0,
+    width="100%",
+    style = "background-color: #4AA4DE; color:white"
+  ),
+  
+  # Import Javascript for tooltip, you can add/modify tooltip descriptions in www/tooltip.js
+  tags$script(src = "tooltip.js")
 )
 
 
@@ -114,18 +189,26 @@ server <- function(input, output){
   observeEvent( c(input$usertree, input$newick),{
     v$tree = ape::read.tree(text = input$newick)
     v$fossils = FossilSim::fossils()
-  })  
+  })
+  
+  # taxonomy output ---
+  observeEvent(input$simtax,{
+    if(is.null(v$tree)) return() # check if there is tree
+    v$tax = FossilSim::sim.taxonomy(tree = v$tree, input$taxonomybeta, input$taxonomylambda) 
+    v$fossils = FossilSim::fossils()
+  })
  
   observeEvent(input$newfossils, {
     if(is.null(v$tree)) return() # ideally this would return an error message
-    if(input$tabset == "Uniform")
+    if(input$tabset == "<p id=\"uniform\">Uniform</p>")
       v$fossils = FossilSim::sim.fossils.poisson(tree = v$tree, rate = input$psi)
-    else if (input$tabset == "Non-uniform") {
+    else if (input$tabset == "<p id=\"non-uniform\">Non-uniform</p>") {
       max.age = FossilSim::tree.max(v$tree)
       times = c(0, sort(runif(input$int-1, min = 0, max = max.age)), max.age)
       rates = rlnorm(input$int, log(input$meanrate), sqrt(input$variance))
       v$fossils = FossilSim::sim.fossils.intervals(v$tree, interval.ages = times, rates = rates)
     }
+    
   })
   
   output$tree <- renderPlot( {
@@ -136,10 +219,42 @@ server <- function(input, output){
     
     if(is.null(v$tree)) return()
     
-    plot(v$fossils, v$tree, show.tree = input$showtree, show.ranges = input$showranges, 
-         show.fossils = input$showfossils, show.strata = input$showstrata, strata = input$int,
-         reconstructed = input$reconstructed, show.tip.label = input$showtips, align.tip.label = TRUE)
-  } )
+    if(input$showtaxonomy) {
+      validate(need(!is.null(v$tax), "No taxomony..."))
+      # Synchronize fossils and taxonomy
+      # todo : move this to generate fossil or taxonomy
+      if(!attr(v$fossils,"from.taxonomy"))
+        v$fossils = FossilSim::reconcile.fossils.taxonomy(v$fossils, v$tax)
+    }
+    
+    
+    plot(v$fossils, v$tree,
+         taxonomy = v$tax,
+         show.tree = input$showtree,
+         show.ranges = input$showranges, 
+         show.fossils = input$showfossils, 
+         show.strata = input$showstrata, 
+         show.taxonomy = input$showtaxonomy,
+         strata = input$int,
+         reconstructed = input$reconstructed, 
+         show.tip.label = input$showtips, 
+         align.tip.label = TRUE)
+    
+     if (input$showtaxonomy && FALSE) {
+     if(is.null(v$tax)) return()
+     if(!all(v$tree$edge %in% v$tax$edge)) return()
+     plot(v$tax, v$tree, legend.position = "bottomleft")
+    }
+  
+    } )
+  
+  # Temporary ??? ---
+  output$tax <- renderPlot( {
+    validate(need(!is.null(v$tax), "Please simulate taxomony..."))
+    if(!all(v$tree$edge %in% v$tax$edge)) return()
+    plot(v$tax, v$tree, legend.position = "bottomleft")
+    
+  })
   
 }
 
