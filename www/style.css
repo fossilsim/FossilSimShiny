@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Make tooltip nice and centered */
 #tooltip {
 	margin-top : 5px;
@@ -12,3 +13,15 @@ h1 {
 .dark {
 	background-color : black
 }
+=======
+/* Make tooltip nice and centered */
+#tooltip {
+	margin-top : 5px;
+	margin-bottom : 5px;
+}
+
+/* Make title beautiful */
+h1 {
+	font-family : Trebuchet MS, Arial Black, Arial;
+}
+>>>>>>> refs/remotes/origin/master
