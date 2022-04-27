@@ -235,6 +235,9 @@ outputSidebarServer <- function(id, v, k) {
           # Debug : print(v$currentTab)
           v$current = v[[v$currentTab]]
         }
+        
+        # Send our current tab to saveas
+        session$sendCustomMessage("tab-for-saveas", v$currentTab)
       })
     }
   )

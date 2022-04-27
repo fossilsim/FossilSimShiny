@@ -1,24 +1,28 @@
 // Retrieving save button from webpage
-// var saveAsButton = document.getElementById("saveas");
+var saveAsButton = document.getElementById("inputSidebar-saveas");
+var currTab = "i"
 
 // Function to save plot as image
 function savePlotAs() {
 	
-	// Retrieving plot from webpage
-	var img = document.getElementById("tree").getElementsByTagName('img')[0];
+	if (document.getElementById("outputSidebar-" + currTab + "tree")) {
+		// Retrieving plot from webpage
+		var img = document.getElementById("outputSidebar-" + currTab + "tree").getElementsByTagName('img')[0];
 
-	download("plot.png", img.src)
+		download("plot.png", img.src)
+	}
+
 }
 
 // Attributing saveas function to button onclick event
-// saveAsButton.onclick = function() {savePlotAs();};
+saveAsButton.onclick = function() {savePlotAs();};
 
 // Function that creates a download button and clicks it so we can spontaneously download files
 function download(file, source) {
   
 	//creating an invisible element
 	var element = document.createElement('a');
-	element.href = source
+	element.href = source;
 	element.setAttribute('download', file);
   
 	// Above code is equivalent to
@@ -31,3 +35,5 @@ function download(file, source) {
   
 	document.body.removeChild(element);
 }
+
+Shiny.addCustomMessageHandler('tab-for-saveas', function(message) {currTab = message});

@@ -1,4 +1,4 @@
-// var tooltip = document.getElementById("tooltip");
+var tooltip = document.getElementById("tooltip");
 
 // Tooltip data :
 // FORMAT : "key/id" : "description"
@@ -34,20 +34,24 @@ var tooltip_dict = {
 	
 };
 
+// Clear tooltip on page load
+clearTooltip();
+
 // Getting all of the elements that have a tooltip according to tooltip_dict
 var tooltip_keys = Object.keys(tooltip_dict);
-// for (let i = 0; i < tooltip_keys.length; i++) {
-	// var tooltip_element = document.getElementById(tooltip_keys[i]);
+for (let i = 0; i < tooltip_keys.length; i++) {
+	//todo -- fix : console.log(tooltip_keys[i])
+	var tooltip_element = document.getElementById("inputSidebar-" + tooltip_keys[i]);
 	
-	// // Adding a mousehover function that displays or clears the correct tooltip for each element
-	// tooltip_element.addEventListener('mouseenter', e => {
-		// setTooltip(tooltip_keys[i]);
-	// });
+	// Adding a mousehover function that displays or clears the correct tooltip for each element
+	tooltip_element.addEventListener('mouseenter', e => {
+		setTooltip(tooltip_keys[i]);
+	});
 	
-	// tooltip_element.addEventListener('mouseleave', e => {
-		// clearTooltip();
-	// });
-// }
+	tooltip_element.addEventListener('mouseleave', e => {
+		clearTooltip();
+	});
+}
 
 // Function that sets the tooltip with the right text, to be called when mouse enters element
 function setTooltip(key) {
@@ -55,9 +59,7 @@ function setTooltip(key) {
 }
 
 // Function that clears the tooltip, to be called when the mouse leaves the element
-function clearTooltip(key) {
+function clearTooltip() {
 	tooltip.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;ℹ : ";
 }
 
-// Clear tooltip on page load
-// clearTooltip();
