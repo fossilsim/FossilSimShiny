@@ -33,7 +33,7 @@ outputSidebar <- function(id) {
           
                    selectInput(inputId = NS(id, paste(initialTabName, "dropview", sep = "")),
                                label="", choices = c("tree", "taxonomy", "tree+fossils")),
-                               top = "2%", right = "5%", width = "15%", height="5vh"),
+                               top = "40px", right = "5%", width = "15%", height="5vh"),
         
         # Main plot output ---
         plotOutput(outputId = NS(id, paste(initialTabName, "tree", sep="")),
@@ -51,7 +51,7 @@ outputSidebar <- function(id) {
     # Set size of output panel 
     #todo -- make it react to different screen resolution
     left = "33%",
-    top= "5%",
+    top= "60px",
     width = "67%"
     )
   )

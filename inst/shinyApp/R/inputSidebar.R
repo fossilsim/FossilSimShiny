@@ -15,8 +15,15 @@ inputSidebarUI <- function(id) {
     
     sidebarPanel(
       
+      HTML("</br>"),
+      
       # I. Tree Simulation Inputs ---
-      h3("Tree"),
+      
+      actionButton(NS(id, "treetab-button"), h3("Tree"), class = "protobutton"),
+      
+      tags$div(id = NS(id, "treetab-content"), class = "prototab prototabhidden",
+      
+      HTML("</br>"),
       
       # reactive inputs
       numericInput(inputId = NS(id, "lambda"), # input name
@@ -46,10 +53,18 @@ inputSidebarUI <- function(id) {
       textInput(inputId = NS(id, "newick"), "User tree",
                 value = "Enter newick string..."),
       
+      ),
       # ---<
       
-      # II. Taxonomy Simulation Inputs ---            
-      h3("Taxonomy"),
+      HTML("</br>"),
+      
+      # II. Taxonomy Simulation Inputs ---     
+      
+      actionButton(NS(id, "taxtab-button"), h3("Taxonomy"), class = "protobutton"),
+      
+      tags$div(id = NS(id, "taxtab-content"), class = "prototab prototabhidden",
+      
+      HTML("</br>"),
       
       numericInput(inputId = NS(id, "taxonomybeta"), 
                    label = "Probability of symmetric speciation", 
@@ -65,10 +80,18 @@ inputSidebarUI <- function(id) {
       
       actionButton(NS(id, "simtax"), "Simulate taxonomy"),
       
+      ),
       # ---<
       
+      HTML("</br>"),
+      
       # III. Fossil Sim Inputs ---
-      h3("Fossils"),
+      
+      actionButton(NS(id, "fossiltab-button"), h3("Fossils"), class = "protobutton"),
+      
+      tags$div(id = NS(id, "fossiltab-content"), class = "prototab prototabhidden",
+      
+      HTML("</br>"),
       
       # Multiple panel : every type of fossil simulation has it's panel
       #todo -- add more type of fossil simulations
@@ -132,17 +155,35 @@ inputSidebarUI <- function(id) {
                                         value = 1,
                                         min = 0,
                                         max = 10 )
-                  )
+                  ),
+                  # --<
+                  
+                  # iv. Lineage Dependent Model
+                  tabPanel(p("Lineage-dependent", id = "lineage-dep"),
+                           numericInput(inputId = NS(id, "rate"),
+                                        label = "Rate",
+                                        value = 2,
+                                        min = 1,
+                                        max = 5 ),
+                           
+                  ),
+                  
                   # --<
                   
       ),
       
       actionButton(NS(id, "newfossils"), "Simulate fossils"),
       
+      ),
       # ---<
-      
+      HTML("</br> </br> </br> </br> </br> </br>"),
       # IV. Appearance Toggles ---
-      h3("Appearance"),
+      
+      actionButton(NS(id, "appearancetab-button"), h3("Appearance"), class = "protobutton"),
+      
+      tags$div(id = NS(id, "appearancetab-content"), class = "prototab prototabhidden",
+      
+      HTML("</br>"),
       
       checkboxInput(inputId = NS(id, "showtree"), "Show tree", value = TRUE),
       checkboxInput(inputId = NS(id, "showtaxonomy"), "Show taxonomy", value = FALSE),
@@ -152,6 +193,7 @@ inputSidebarUI <- function(id) {
       checkboxInput(inputId = NS(id, "showtips"), "Show tips", value = FALSE),
       checkboxInput(inputId = NS(id, "reconstructed"), "Show reconstructed tree", value = FALSE),
       
+      ),
       # ---<
       
       # V. Save Tree ---
@@ -160,8 +202,9 @@ inputSidebarUI <- function(id) {
       actionButton(NS(id, "saveas"), "Save tree as image..."),
       
       # Import Javascript for saveas functionality
-      tags$script(src = "saveas.js")
+      tags$script(src = "saveas.js"),
       
+      tags$script(src = "protodashboard.js")
       # ---<
       
     )
@@ -234,6 +277,14 @@ inputSidebarServer <- function(id, v) {
                                                                  proxy.data = wd,
                                                                  PD = input$pd,
                                                                  DT = input$dt,PA = input$pa)
+        }
+        # --<
+        
+        # iv. Lineage Model --
+        else if (input$tabset == "<p id=\"lineage-dep\">Lineage-dependent</p>") {
+          dist = function() { rlnorm(1, log(rate), 1) }
+          rates = sim.trait.values(rate, taxonomy = v$current$tax, model = "independent", dist = dist)
+          v$current$fossils = sim.fossils.poisson(rates, taxonomy = v$current$tax)
         }
         # --<
         }

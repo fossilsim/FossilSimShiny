@@ -18,10 +18,8 @@ ui = fluidPage(
   # App title for head ---
   tags$head(HTML("<title>Simulate fossils with FossilSim</title>")),
   
-  # App title ---
-  titlePanel(
-    h1("FossilSimShiny")
-  ),
+  # Small white space, purely aesthetic ---
+  HTML("</br> "),
   
   # Sidebar layout with input and output definitions ---
   sidebarLayout(
@@ -32,16 +30,26 @@ ui = fluidPage(
     
     # Main panel for displaying outputs ---
     # ./R/outputSidebar.R
-    outputSidebar("outputSidebar")
+    outputSidebar("outputSidebar"),
     
   ),
   
+  # App title ---
+  fixedPanel(
+    tags$div(class = "app-title", h1("FossilSimShiny")), left = 0, top = 0, width="100%",
+  ),
+  
   # Small white space, purely aesthetic ---
-  p("</br> </br> </br>"),
+  HTML("</br> </br> </br> </br> </br> </br>"),
   
   # Tooltip : info bar at the bottom of the application ---
   # ./R/tooltip.R
-  tooltip(id = "tooltip")
+  tooltip(id = "tooltip"),
+  
+  # Themebar : buttons to change theme (background color, text color, etc...)
+  # ./R/themebar.R
+  themebar(id = "themebar")
+  
 )
 
 
@@ -68,5 +76,5 @@ server <- function(input, output) {
   outputSidebar = outputSidebarServer("outputSidebar", tabManager, keys)
 }
 
-# Run the app ---
+# Run the app --- outdated
 shinyApp(ui = ui, server = server)

@@ -8,7 +8,7 @@ tooltip <- function(id) {
       left = 0,
       bottom = 0,
       width="100%",
-      style = "background-color: #4AA4DE; color:white"
+      style = "background-color: #54aeff; color:#e6eaee"
     ),
     
     # Import Javascript for tooltip, you can add/modify tooltip descriptions in www/tooltip.js

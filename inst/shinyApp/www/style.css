@@ -1,3 +1,43 @@
+/* Palettes/Theme, this is where they are defined */
+:root,
+
+:root.git-dark {
+	--dark-color1 : #161b22;
+	--dark-color2 : #0d1117;
+	--medium-color : #28303b;
+	
+	--bright-textcolor : #c9d1d9;
+	--tame-textcolor : #8b949e;
+	--medium-textcolor : #8b949e;
+
+}
+
+:root.git-light {
+	--dark-color1 : #24292f;
+	--dark-color2 : #ffffff;
+	--medium-color : #cdd7e0;
+
+	--bright-textcolor : #0b0c0e;
+	--tame-textcolor : #3d4147;
+	--medium-textcolor : #0969da;	
+}
+
+:root.classic {
+	--dark-color1 : #392c31;
+	--dark-color2 : #4a3c4a;
+	--medium-color : #5a555a;
+	
+	--bright-textcolor : #e6eaee;
+	--tame-textcolor : #d5becd;
+	--medium-textcolor : #83918b;
+
+}
+
+
+
+
+/* General --- */
+
 /* Make tooltip nice and centered */
 #tooltip {
 	margin-top : 5px;
@@ -9,6 +49,70 @@ h1 {
 	font-family : Trebuchet MS, Arial Black, Arial;
 }
 
-.dark {
-	background-color : black
+body {
+	color : var(--bright-textcolor);
+	background-color : var(--dark-color2);
+}
+
+a {
+	color : var(--medium-textcolor);
+}
+
+/* Shiny specific tags --- */
+
+/* Main */
+.container-fluid {
+	background-color : var(--dark-color2);
+}
+
+/* Title */
+.app-title {
+	background-color : var(--dark-color1);
+	margin-top : -20px;
+}
+
+/* Tabs */
+.well {
+	background-color : var(--medium-color); 
+	color : var(--bright-textcolor);
+	border : 0;
+}
+
+/* Number Input */
+.shiny-bound-input {
+	background-color : var(--dark-color2);
+	color : var(--tame-textcolor); 
+	border : 0;
+}
+
+/* Theme Button */
+.themeButton {
+	height : 20px;
+	width : 20px;
+	border : 3px solid;
+	border-color : var(--dark-color1);
+	border-radius : 3px;
+}
+
+/* Prototab */
+
+.protobutton {
+	width: calc(100% + 34px);
+	border-radius : 3px;
+	text-align : left;
+	margin-left : -17px;
+	border-bottom : 3px solid;
+	border-color : var(--dark-color1);
+}
+
+.prototab {
+  opacity: 1;
+  height:100%;
+  transition: all 0.2s;
+}
+
+.prototab.prototabhidden {
+  opacity: 0;
+  height: 0px;
+  visibility:hidden;
 }
