@@ -36,7 +36,9 @@ ui = fluidPage(
   
   # App title ---
   fixedPanel(
-    tags$div(class = "app-title", h1("FossilSimShiny")), left = 0, top = 0, width="100%",
+    tags$div(class = "app-title", HTML(
+      "<h1 id = \"app-title\">F<img id = \"logo\" src = \"logo.png\" style=\"width : 20px;\">ssilSimShiny</h1>"
+      )), left = 0, top = 0, width="100%",
   ),
   
   # Small white space, purely aesthetic ---

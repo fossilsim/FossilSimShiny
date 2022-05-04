@@ -1,7 +1,10 @@
 Package: FossilSimShiny
 Title: Shiny Application For FossilSim
 Version: 0.6.0
-Authors@R: person("Titouan", "Chambe", email="titouan.chambe@u-psud.fr", role=c("aut","cre"))
+Authors@R: c(person("Titouan", "Chambe", email="titouan.chambe@u-psud.fr", role=c("aut")),
+    person("Joelle", "Barido-Sottani", email="joelle.barido-sottani@m4x.org",role=c("aut","cre","cph")),
+    person("Rachel", "Warnock", email="rachel.warnock@bsse.ethz.ch", role=c("aut","cph"))
+    )
 Description: A shiny application based on FossilSim. Used for simulating
     tree, taxonomic and fossil data under mechanistic models of speciation,
     preservation and sampling.

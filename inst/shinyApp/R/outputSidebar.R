@@ -212,7 +212,7 @@ outputSidebarServer <- function(id, v, k) {
 
                          selectInput(inputId = NS(id, paste(v$currentTab, "dropview", sep="")),
                                      label="", choices = c("tree", "taxonomy", "tree+fossils")),
-                                     top = "2%", right = "5%", width = "15%", height="5vh"),
+                                     top = "40px", right = "5%", width = "15%", height="5vh"),
                                                                
                                                        
               plotOutput(outputId = NS(id, paste(v$currentTab, "tree", sep="")),

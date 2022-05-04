@@ -221,7 +221,7 @@ inputSidebarServer <- function(id, v) {
       
       # List of all of our different inputs, incredibly useful to perform mass actions ---
       # Does not need to be reactive as we avoid creating new inputs during run time
-      allNumericInputs = c("lambda", "mu", "tips", "taxonomylambda", "taxonomybeta", "psi", "meanrate", "variance", "strata", "pd", "dt", "pa")
+      allNumericInputs = c("lambda", "mu", "tips", "taxonomylambda", "taxonomybeta", "psi", "meanrate", "variance", "strata", "pd", "dt", "pa", "rate")
       allCheckboxInputs = c("usertree", "showtree", "showtaxonomy", "showfossils", "showranges", "showstrata", "showtips", "reconstructed")
       
       # Simulate tree function ---
@@ -282,9 +282,9 @@ inputSidebarServer <- function(id, v) {
         
         # iv. Lineage Model --
         else if (input$tabset == "<p id=\"lineage-dep\">Lineage-dependent</p>") {
-          dist = function() { rlnorm(1, log(rate), 1) }
-          rates = sim.trait.values(rate, taxonomy = v$current$tax, model = "independent", dist = dist)
-          v$current$fossils = sim.fossils.poisson(rates, taxonomy = v$current$tax)
+          dist = function() { rlnorm(1, log(v$current$rate), 1) }
+          rates = FossilSim::sim.trait.values(v$current$rate, taxonomy = v$current$tax, model = "independent", dist = dist)
+          v$current$fossils = FossilSim::sim.fossils.poisson(rates, taxonomy = v$current$tax)
         }
         # --<
         }
