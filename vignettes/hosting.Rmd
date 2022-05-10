@@ -1,0 +1,236 @@
+---
+title: "Hosting FossilShinyApp on a Web Server (Debian 11)"
+author: "Titouan Chambe"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Hosting FossilShinyApp on a Web Server (Debian 11)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 5, fig.height = 5
+)
+```
+
+This vignette provides information on how to host the FossilShinyApp on a web server.\
+\
+Specifically, while we'll only look at serving the app on Debian 11, this guide can easily be adapted for any Linux based web server and for any app for that matter.\
+
+## Contents
+* [Preface]
+* [Dependencies]
+  * [R]
+  * [Dependencies for building shiny server from source]
+  * [R packages we need]
+* [Installing R shiny server]
+* [Putting the app on the server]
+* [Firewall tweaks]
+* [Starting the shiny server]
+
+## Preface
+
+This guide will assume you know basic bash commands and have already setup a ssh connection to your web server.
+
+## Dependencies
+
+Let's start by installing all the dependencies we'll need to compile and run our shiny web server.
+Connect via ssh to your web server and install the following packages.
+
+### R
+
+Some dependencies used by FossilSim require a rather recent version of R. At the time of making this, on debian bullseye, you need a newer version of R than the one supplied by the advanced packaging tool (apt).\
+\
+This means we'll need to add a PPA in order to get a more recent version of R as to fully support the FossilSim package, which we obviously need.\
+\
+First open the file at `/etc/apt/sources.list` to add the R PPA to your sources list:
+\
+```{bash, eval = FALSE}
+nano /etc/apt/sources.list
+```
+
+Add the line `deb http://cloud.r-project.org/bin/linux/debian bullseye-cran40/` as shown below to add the PPA.\
+\
+If you are using a different distro, you can use https://cran.rstudio.com/bin/linux/ to find the right PPA.\
+\
+Your source file should look like this:
+
+```{bash, eval = FALSE}
+# deb http://mirrors.online.net/debian bullseye main
+
+deb http://mirrors.online.net/debian bullseye main non-free contrib
+deb-src http://mirrors.online.net/debian bullseye main non-free contrib
+
+deb http://security.debian.org/debian-security bullseye-security main contrib n>
+deb-src http://security.debian.org/debian-security bullseye-security main contr>
+
+# R 4.2.0
+deb http://cloud.r-project.org/bin/linux/debian bullseye-cran40/
+```
+
+Then press `CTRL+X` to quit and `Y` to save.\
+\
+Finally, you can install R.
+
+```{bash, eval = FALSE}
+apt-get update
+apt-get install r-base r-base-dev
+```
+
+You can verify your R version by using the `R` command.
+
+```{bash, eval = FALSE}
+$ R
+
+R version 4.2.0 (2022-04-22) -- "Vigorous Calisthenics"
+```
+
+### Dependencies for building shiny server from source
+
+These are the dependencies you'll need to build shiny server. Depending on your distribution they may already be pre-installed.\
+\
+
+* **Python 3.6+**, preinstalled on Debian 11.
+
+Use `which python3` to verify it is installed. You should get something like `/usr/bin/python3` if it's correctly installed.
+
+
+* **cmake**
+
+Use `sudo apt-get install cmake`.
+
+
+* **gcc**
+
+Should be pre-installed.</br>
+*Author's note: we need gcc 4.8 or newer which means you cannot use this guide with a Debian 9< server.*
+
+* **g++**
+
+Should be pre-installed.
+
+
+* **git**
+
+Use `sudo apt-get install git`.
+
+### R packages we need
+
+Any R packages used by the app needs to be installed for all users.
+This means we need to install both the shiny package and the FossilSim package for all users.
+
+```{bash, eval = FALSE}
+sudo su - -c "R -e \"install.packages('shiny', repos='https://cran.rstudio.com/')\""
+sudo su - -c "R -e \"install.packages('FossilSim')\""
+```
+
+## Installing R shiny server
+
+**Note:** most of this part is referenced from <a href="https://github.com/rstudio/shiny-server/wiki/Building-Shiny-Server-from-Source">here</a>.\
+\
+Once all of the prerequisites have been satisfied, you can use the following commands to download and install Shiny Server.
+
+```{bash, eval = FALSE}
+# Clone the repository from GitHub
+git clone https://github.com/rstudio/shiny-server.git
+
+# Get into a temporary directory in which we'll build the project
+cd shiny-server
+mkdir tmp
+cd tmp
+
+# Install our private copy of Node.js
+../external/node/install-node.sh
+
+# Add the bin directory to the path so we can reference node
+DIR=`pwd`
+PATH=$DIR/../bin:$PATH
+
+# Use cmake to prepare the make step. Modify the "--DCMAKE_INSTALL_PREFIX"
+# if you wish the install the software at a different location.
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local ../
+# Get an error here? Check the "How do I set the cmake Python version?" question below
+
+# Compile native code and install npm dependencies
+make
+mkdir ../build
+(cd .. && ./bin/npm install)
+
+# Install the software at the predefined location
+sudo make install
+
+# Install default config file
+sudo mkdir -p /etc/shiny-server
+sudo cp ../config/default.config /etc/shiny-server/shiny-server.conf
+
+# Place a shortcut to the shiny-server executable in /usr/bin
+sudo ln -s /usr/local/shiny-server/bin/shiny-server /usr/bin/shiny-server
+
+# Create shiny user. On some systems, you may need to specify the full path to 'useradd'
+sudo useradd -r -m shiny
+
+# Create log, config, and application directories
+sudo mkdir -p /var/log/shiny-server
+sudo mkdir -p /srv/shiny-server
+sudo mkdir -p /var/lib/shiny-server
+sudo chown shiny /var/log/shiny-server
+sudo mkdir -p /etc/shiny-server
+
+# I added this command
+sudo chown shiny:shiny /var/lib/shiny-server/
+
+```
+
+## Putting the app on the server
+
+The `/srv/shiny-server` directory is where we house our apps.</br>
+I recommend creating a new directory: `/srv/shiny-server/FossilShinyApp/`.
+
+Then, you can grab the `app.R` file, the `/www/` folder and the `/R/` folder from <a href = "https://github.com/fossilsim/shiny/tree/master/inst/shinyApp">here</a> and copy them to `/srv/shiny-server/FossilShinyApp/`.
+
+## Firewall tweaks
+
+By default, shiny server is set to use port **3838**.</br> *Author's note: I have no idea why they chose this port.*\
+\
+You'll need to open the port.\
+\
+If you are using uncomplicated firewall, you can run the command: `sudo ufw allow 3838`
+
+Futhermore you can change the port used in `/etc/shiny-server/shiny-server.conf`.
+
+## Starting the shiny server
+
+As you probably noticed, during the installation, we created a new user called shiny.
+We'll use this user to start and stop our shiny operations.
+
+Let's start our shiny server. First, log in as shiny.
+```{bash, eval = FALSE}
+su shiny
+```
+
+If you've followed everything correctly, you should be able to start the shiny server by typing:
+```{bash, eval = FALSE}
+shiny-server
+```
+
+```{bash, eval = FALSE}
+[2022-05-10T13:56:44.320] [INFO] shiny-server - Shiny Server v1.5.19.0 (Node.js v16.14.0)
+[2022-05-10T13:56:44.324] [INFO] shiny-server - Using config file "/etc/shiny-server/shiny-server.conf"
+[2022-05-10T13:56:44.435] [INFO] shiny-server - Starting listener on http://[::]:3838
+```
+
+You should then be able to access your app using any web browser and going to the following we address:
+
+http://YOUR_IP:3838/FossilSimShiny/
+
+
+## Further Reading
+
+* <a href="https://docs.rstudio.com/shiny-server/">Administrative guide to shiny server</a>
+
+\
+\
