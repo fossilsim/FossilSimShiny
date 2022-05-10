@@ -87,9 +87,9 @@ outputSidebarServer <- function(id, v, k) {
         output[[paste(k,"tree",sep="")]] <- renderPlot( {
           
           # Newick tree import
-          # if(v$current$usertree)
-          #   validate(need( !is.null(ape::read.tree(text = input$newick)) , "Specify newick string"))
-          # else validate(need( ((input$mu/input$lambda) < 0.9), "Turnover a bit too high! Be kind to the server - try a lower extinction rate!"))
+          if(v$current$usertree)
+            validate(need(!is.null(ape::read.tree(text = v$current$newick)) , "Specify newick string"))
+          else validate(need( ((v$current$mu/v$current$lambda) < 0.9), "Turnover a bit too high! Be kind to the server - try a lower extinction rate!"))
     
           # Check if there is a tree
           if(is.null(v$current$tree)) return()

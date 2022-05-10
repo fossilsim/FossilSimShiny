@@ -223,6 +223,7 @@ inputSidebarServer <- function(id, v) {
       # Does not need to be reactive as we avoid creating new inputs during run time
       allNumericInputs = c("lambda", "mu", "tips", "taxonomylambda", "taxonomybeta", "psi", "meanrate", "variance", "strata", "pd", "dt", "pa", "rate")
       allCheckboxInputs = c("usertree", "showtree", "showtaxonomy", "showfossils", "showranges", "showstrata", "showtips", "reconstructed")
+      allTextInputs = c("newick")
       
       # Simulate tree function ---
       observeEvent(input$simtree, {
@@ -295,7 +296,7 @@ inputSidebarServer <- function(id, v) {
       # When an input is changed run through all of the inputs and grabs the data
       #todo -- implement a more efficient method ie : only grab what was changed
       observe( {
-        for (inpId in c(allNumericInputs, allCheckboxInputs)) {
+        for (inpId in c(allNumericInputs, allCheckboxInputs, allTextInputs)) {
             v$current[[inpId]] = input[[inpId]]
         }
         }
