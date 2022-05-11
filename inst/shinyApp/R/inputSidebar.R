@@ -263,7 +263,6 @@ inputSidebarServer <- function(id, v) {
       
         v$current$tax = FossilSim::sim.taxonomy(tree = v$current$tree, input$taxonomybeta, input$taxonomylambda)
         v$current$fossils = FossilSim::fossils()
-        print("ah")
         
         session$sendCustomMessage("loading", FALSE)
         }

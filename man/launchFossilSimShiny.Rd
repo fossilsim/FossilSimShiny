@@ -4,8 +4,12 @@
 \alias{launchFossilSimShiny}
 \title{Run the Shiny app in a web browser}
 \usage{
-launchFossilSimShiny()
+launchFossilSimShiny(inbrowser = TRUE)
+}
+\arguments{
+\item{inbrowser}{Launch the app inside the system's default browser or not.}
 }
 \description{
-Run the Shiny app in a web browser
+This the function used to launch the FossilSim shiny app.
+If want a look at the inner workings of the app, take a look at the ./inst/shinyApp/ folder.
 }
