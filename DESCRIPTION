@@ -15,4 +15,7 @@ RoxygenNote: 7.1.2
 Imports:
     shiny,
     FossilSim
-
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

@@ -89,8 +89,14 @@ outputSidebarServer <- function(id, v, k) {
           # Newick tree import
           if(v$current$usertree)
             validate(need(!is.null(ape::read.tree(text = v$current$newick)) , "Specify newick string"))
-          else validate(need( ((v$current$mu/v$current$lambda) < 0.9), "Turnover a bit too high! Be kind to the server - try a lower extinction rate!"))
-    
+          else {
+            validate(need( ((v$current$mu/v$current$lambda) < 0.9), "Turnover a bit too high! Be kind to the server - try a lower extinction rate!"))
+            validate(need( (v$current$tips < 101), "Please keep the number of tips under one hundred ~ thank you."))
+          }
+          
+          validate(need( (v$current$taxonomybeta >= 0 && v$current$taxonomybeta <= 1 && v$current$taxonomylambda >= 0 && v$current$taxonomylambda <= 1), "Rates need to be between one and zero."))
+          
+          
           # Check if there is a tree
           if(is.null(v$current$tree)) return()
     

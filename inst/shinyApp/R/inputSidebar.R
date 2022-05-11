@@ -13,7 +13,14 @@ inputSidebarUI <- function(id) {
   # tagList is the nested version of fluidPage
   tagList(
     
+    # Loading ---
+    fixedPanel(id = "loader-wrapper",
+      tags$div(id = "loader", "")
+    ),
+    
     sidebarPanel(
+      
+      tags$script(src = "loading.js"),
       
       HTML("</br>"),
       
@@ -227,30 +234,51 @@ inputSidebarServer <- function(id, v) {
       
       # Simulate tree function ---
       observeEvent(input$simtree, {
+        validate(need( ((v$current$mu/v$current$lambda) < 0.9), "Turnover a bit too high! Be kind to the server - try a lower extinction rate!"))
+        validate(need( (v$current$tips < 101), "Please keep the number of tips under one hundred ~ thank you."))
+        
+        session$sendCustomMessage("loading", TRUE)
+        
         v$current$tree = TreeSim::sim.bd.taxa(input$tips, 1, input$lambda, input$mu)[[1]]
         v$current$fossils = FossilSim::fossils()
         v$current$tax = NULL # set taxonomy to NULL to avoid issues as old taxonomy will very likely not line up with a new tree
+
+        session$sendCustomMessage("loading", FALSE)
         }
       )
 
       # Newick function ---
       observeEvent( c(input$usertree, input$newick), {
         v$current$tree = ape::read.tree(text = input$newick)
+        
+        session$sendCustomMessage("loading", TRUE)
+        
         v$current$fossils = FossilSim::fossils()
+        
+        session$sendCustomMessage("loading", FALSE)
         }
       )
 
       # Simulate taxonomy function ---
       observeEvent(input$simtax, {
         if(is.null(v$current$tree)) return() # check if there is tree #todo -- error message
+        validate(need( (input$taxonomybeta >= 0 && input$taxonomybeta <= 1 && input$taxonomylambda >= 0 && input$taxonomylambda <= 1), "Rates need to be between one and zero."))
+        
+        session$sendCustomMessage("loading", TRUE)
+        
         v$current$tax = FossilSim::sim.taxonomy(tree = v$current$tree, input$taxonomybeta, input$taxonomylambda)
         v$current$fossils = FossilSim::fossils()
+        print("ah")
+        
+        session$sendCustomMessage("loading", FALSE)
         }
       )
 
       # Simulate fossils function ---
       observeEvent(input$newfossils, {
         if(is.null(v$current$tree)) return() # todo -- error message
+        
+        session$sendCustomMessage("loading", TRUE)
         
         # Here we check which fossil sim tab is selected and simulate fossils
         #todo -- better way to check selected tab
@@ -288,6 +316,9 @@ inputSidebarServer <- function(id, v) {
           v$current$fossils = FossilSim::sim.fossils.poisson(rates, taxonomy = v$current$tax)
         }
         # --<
+        
+        session$sendCustomMessage("loading", FALSE)
+        
         }
       )
 
