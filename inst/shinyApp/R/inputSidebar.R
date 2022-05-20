@@ -105,6 +105,7 @@ inputSidebarUI <- function(id) {
                   
                   # i. Uniform Distribution --
                   tabPanel(p("Uniform", id = "uniform"),
+                           HTML("</br>"),
                            numericInput(inputId = NS(id, "psi"),
                                         label = "Sampling rate",
                                         value = 1,
@@ -115,6 +116,7 @@ inputSidebarUI <- function(id) {
                   
                   # ii. Non-uniform Distribution --
                   tabPanel(p("Non-uniform", id = "non-uniform"),
+                           HTML("</br>"),
                            sliderInput(inputId = NS(id, "int"),
                                        label = "Number of intervals",
                                        value = 1,
@@ -137,6 +139,7 @@ inputSidebarUI <- function(id) {
                   
                   # iii. Environment Model (Holland, 1995) --
                   tabPanel(p("Environment-dependent", id = "enviro-dep"),
+                           HTML("</br>"),
                            numericInput(inputId = NS(id, "strata"),
                                         label = "Strata",
                                         value = 7,
@@ -159,12 +162,15 @@ inputSidebarUI <- function(id) {
                                         label = "PA",
                                         value = 1,
                                         min = 0,
-                                        max = 10 )
+                                        max = 10 ),
+                           
+                           checkboxInput(inputId = NS(id, "showsamplingproxy"), "Show Sampling Proxy", value = TRUE)
                   ),
                   # --<
                   
                   # iv. Lineage Dependent Model
                   tabPanel(p("Lineage-dependent", id = "lineage-dep"),
+                           HTML("</br>"),
                            numericInput(inputId = NS(id, "rate"),
                                         label = "Rate",
                                         value = 2,
@@ -230,7 +236,7 @@ inputSidebarServer <- function(id, v) {
       # List of all of our different inputs, incredibly useful to perform mass actions ---
       # Does not need to be reactive as we avoid creating new inputs during run time
       allNumericInputs = c("lambda", "mu", "tips", "taxonomylambda", "taxonomybeta", "psi", "meanrate", "variance", "strata", "pd", "dt", "pa", "rate")
-      allCheckboxInputs = c("usertree", "showtree", "showtaxonomy", "showfossils", "showranges", "showstrata", "showtips", "reconstructed")
+      allCheckboxInputs = c("usertree", "showtree", "showtaxonomy", "showfossils", "showranges", "showstrata", "showtips", "reconstructed", "showsamplingproxy")
       allTextInputs = c("newick")
       
       # Simulate tree function ---
@@ -276,8 +282,10 @@ inputSidebarServer <- function(id, v) {
         #todo -- better way to check selected tab
         
         # i. Uniform Distribution --
-        if(input$tabset == "<p id=\"uniform\">Uniform</p>")
+        if(input$tabset == "<p id=\"uniform\">Uniform</p>") {
+          v$current$fossilModelName = "Uniform"
           v$current$fossils = FossilSim::sim.fossils.poisson(tree = v$current$tree, rate = input$psi)
+        }
         # --<
         
         # ii. Non-Uniform Distribution --
@@ -285,6 +293,7 @@ inputSidebarServer <- function(id, v) {
           max.age = FossilSim::tree.max(v$current$tree)
           times = c(0, sort(runif(input$int-1, min = 0, max = max.age)), max.age)
           rates = rlnorm(input$int, log(input$meanrate), sqrt(input$variance))
+          v$current$fossilModelName = "Non-Uniform"
           v$current$fossils = FossilSim::sim.fossils.intervals(v$current$tree, interval.ages = times, rates = rates)
         }
         # --<
@@ -292,6 +301,7 @@ inputSidebarServer <- function(id, v) {
         # iii. Environment Model (Holland, 1995) --
         else if (input$tabset == "<p id=\"enviro-dep\">Environment-dependent</p>") {
           wd = FossilSim::sim.gradient(input$strata)
+          v$current$fossilModelName = "Holland"
           v$current$fossils = FossilSim::sim.fossils.environment(tree = v$current$tree,
                                                                  max.age = FossilSim::tree.max(v$current$tree),
                                                                  strata = input$strata,
@@ -304,7 +314,16 @@ inputSidebarServer <- function(id, v) {
         # iv. Lineage Model --
         else if (input$tabset == "<p id=\"lineage-dep\">Lineage-dependent</p>") {
           dist = function() { rlnorm(1, log(v$current$rate), 1) }
+          
+          # Check if taxonomy has been generated and if it corresponds to the current tree
+          if (is.null(v$current$tax) || !(v$current$tree$edge %in% v$current$tax$edge)) {
+            # If not then stop loading animation and do nothing
+            session$sendCustomMessage("loading", FALSE)
+            return()
+          }
+          
           rates = FossilSim::sim.trait.values(v$current$rate, taxonomy = v$current$tax, model = "independent", dist = dist)
+          v$current$fossilModelName = "Lineage"
           v$current$fossils = FossilSim::sim.fossils.poisson(rates, taxonomy = v$current$tax)
         }
         # --<
@@ -313,7 +332,6 @@ inputSidebarServer <- function(id, v) {
         
         }
       )
-
 
       # Input synchronization with data ---
       # When an input is changed run through all of the inputs and grabs the data

@@ -1,6 +1,6 @@
 var loaditem = document.getElementById("loader-wrapper");
 
-// We recycle the prototab class wich let's us smoothly turn objects visible/invisible
+// We recycle the prototab class which let's us smoothly turn objects visible/invisible
 loaditem.classList.add("prototab");
 
 // When you get server response, stop loading

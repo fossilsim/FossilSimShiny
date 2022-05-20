@@ -152,10 +152,12 @@ outputSidebarServer <- function(id, v, k) {
                show.fossils = v$current$showfossils,
                show.strata = v$current$showstrata,
                show.taxonomy = v$current$showtaxonomy,
+               
                #todo bis -- incorporate the following params
-               #show.proxy = FALSE,
-               #proxy.data = wd,
-               # strata = v$current$current$strata,
+               show.proxy = (v$current$showsamplingproxy && v$current$fossilModelName == "Holland"),
+               proxy.data = wd,
+               strata = v$current$strata,
+               
                reconstructed = v$current$reconstructed,
                show.tip.label = v$current$showtips,
                align.tip.label = TRUE)
