@@ -200,7 +200,7 @@ You'll need to open the port.\
 \
 If you are using uncomplicated firewall, you can run the command: `sudo ufw allow 3838`
 
-Futhermore you can change the port used in `/etc/shiny-server/shiny-server.conf`.
+Furthermore you can change the port used in `/etc/shiny-server/shiny-server.conf`.
 
 ## Starting the shiny server
 
