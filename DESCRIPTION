@@ -17,7 +17,6 @@ Imports:
     FossilSim
 Suggests: 
     knitr,
-    rmarkdown,
-    spelling
+    rmarkdown
 VignetteBuilder: knitr
 Language: en-US
