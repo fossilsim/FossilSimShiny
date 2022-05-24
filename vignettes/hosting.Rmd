@@ -55,7 +55,7 @@ nano /etc/apt/sources.list
 
 Add the line `deb http://cloud.r-project.org/bin/linux/debian bullseye-cran40/` as shown below to add the PPA.\
 \
-If you are using a different distro, you can use https://cran.rstudio.com/bin/linux/ to find the right PPA.\
+If you are using a different distro, you can use https://CRAN.R-project.org/bin/linux/ to find the right PPA.\
 \
 Your source file should look like this:
 
@@ -223,9 +223,11 @@ shiny-server
 [2022-05-10T13:56:44.435] [INFO] shiny-server - Starting listener on http://[::]:3838
 ```
 
-You should then be able to access your app using any web browser and going to the following we address:
+You should then be able to access your app using any web browser and going to the following web address:
 
-http://YOUR_IP:3838/FossilSimShiny/
+```{bash, eval = FALSE}
+http:// your ip address :3838/FossilSimShiny/
+```
 
 
 ## Further Reading
