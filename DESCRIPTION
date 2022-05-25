@@ -1,11 +1,11 @@
 Package: FossilSimShiny
-Title: Shiny Application for FossilSim
+Title: Shiny Application for 'FossilSim'
 Version: 1.0.0
 Authors@R: c(person("Titouan", "Chambe", email="titouan.chambe@u-psud.fr", role=c("aut")),
     person("Joelle", "Barido-Sottani", email="joelle.barido-sottani@m4x.org",role=c("aut","cre","cph")),
     person("Rachel", "Warnock", email="rachel.warnock@fau.de", role=c("aut","cph"))
     )
-Description: A shiny application based on FossilSim. Used for simulating
+Description: A shiny application based on 'FossilSim'. Used for simulating
     tree, taxonomic and fossil data under mechanistic models of speciation,
     preservation and sampling.
 License: GPL (>= 3)
@@ -17,6 +17,7 @@ Imports:
     FossilSim
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    spelling
 VignetteBuilder: knitr
 Language: en-US

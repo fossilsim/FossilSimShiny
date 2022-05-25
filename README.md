@@ -1,11 +1,13 @@
 ## FossilSimShiny
 
-R package for explorating phylogenetic tree, taxonomy and fossil data simulations using a simple shiny interface.
+`R` package for exploring phylogenetic trees, taxonomy and fossil data simulations using a simple shiny interface.
 
-The latest version can be installed in R using the package devtools:
+The latest version can be installed in `R` using the package `devtools`:
 
-    library(devtools)
-    install_github("fossilsim/shiny")
+```{R, eval = FALSE}
+  library(devtools)
+  install_github("fossilsim/shiny")
+```
 
 ### Quick start
 

@@ -1,5 +1,5 @@
 ---
-title: "How to use the FossilSimShiny app: a basic guide of the main functionalities"
+title: "How to use the 'FossilSimShiny' app: a basic guide of the main functionalities"
 author: "Titouan Chambe"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette provides information on how to use the FossilSimShiny application to perform simple tasks.
+This vignette provides information on how to use the `FossilSimShiny` application to perform simple tasks.
 
 ## Contents
 
@@ -26,7 +26,7 @@ This vignette provides information on how to use the FossilSimShiny application 
   * [Importing a tree from the Newick format]
 * [Generating Taxonomy]
 * [Simulating Fossils]
-* [Saving your tree as a png]
+* [Saving your tree as a `.png`]
 * [Last Words]
 * [Additional Information]
 
@@ -34,7 +34,7 @@ This vignette provides information on how to use the FossilSimShiny application 
 
 Let's dive right in.\
 \
-Once you have installed the FossilSimShiny package,\
+Once you have installed the `FossilSimShiny` package,\
 \
 ```{r, eval=FALSE}
 install.packages("FossilSimShiny")
@@ -48,7 +48,7 @@ FossiSimShiny::launchFossilSimShiny()
 \
 This should launch the application in your preferred browser.\
 \
-If you are using RStudio and you want to launch the app inside RStudio's browser, you can instead use:\
+If you are using `RStudio` and you want to launch the app inside `RStudio's` browser, you can instead use:\
 
 ```{r, eval=FALSE}
 FossiSimShiny::launchFossilSimShiny(FALSE)
@@ -85,9 +85,9 @@ knitr::include_graphics("images/tree-menu-click-sim.png")
 cap = "**Fig. 3**. Generating a tree from set parameters."
 ```
 
-### Importing a tree from the Newick format
+### Importing a tree from the `Newick` format
 
-To use your own trees, simply tick the user tree check box and paste your Newick string inside the designated text box below.\
+To use your own trees, simply tick the user tree check box and paste your `Newick` string inside the designated text box below.\
 \
 ```{r echo=FALSE, out.width = "90%", fig.cap = cap}
 knitr::include_graphics("images/newick.png")
@@ -128,7 +128,7 @@ cap = "**Fig. 6**. Simulating a taxonomy with the default parameters."
 
 **Once you have a phylogenetic tree,** you can immediately simulate fossil records.\
 
-*Note: if do not have a tree generated, go back to [Phylogenetic Tree]. Futhermore, if you wish to use a lineage-dependent model to simulate your fossils, it is recommended to generate the taxonomy first. Go to [Generating Taxonomy].*\
+*Note: if do not have a tree generated, go back to [Phylogenetic Tree]. Furthermore, if you wish to use a lineage-dependent model to simulate your fossils, it is recommended to generate the taxonomy first. Go to [Generating Taxonomy].*\
 \
 First, click on the **fossils** tab.\
 \
@@ -150,7 +150,7 @@ knitr::include_graphics("images/fos-menu.png")
 cap = "**Fig. 8**. Generating fossil records for our tree using a uniform distribution."
 ```
 
-## Saving your tree as a png
+## Saving your tree as a `.png`
 
 Use the **drop down** in the top left corner of the app to select the plot that you would like to save.\
 As an example, let's save a picture of our taxonomy.\
@@ -167,7 +167,7 @@ knitr::include_graphics("images/saveas.png")
 cap = "**Fig. 10**. Saving our taxonomy as an image."
 ```
 \
-Your plot should get saved as a .png to your `/downloads` folder.\
+Your plot should get saved as a `.png` to your `/downloads` folder.\
 
 ## Last words
 

@@ -1,10 +1,13 @@
-#' Run the Shiny app in a web browser
+#' Run the app in a web browser
 #' 
 #' @description 
-#' This the function used to launch the FossilSim shiny app.
-#' If want a look at the inner workings of the app, take a look at the ./inst/shinyApp/ folder.
+#' This the function used to launch the shiny app.
 #' 
 #' @param inbrowser Launch the app inside the system's default browser or not.
+#' @return No return value, called for side effects.
+#' 
+#' @example 
+#' launchFossilSimShiny()
 #' 
 #' @import shiny
 #' @import FossilSim

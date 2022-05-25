@@ -2,14 +2,16 @@
 % Please edit documentation in R/launch.R
 \name{launchFossilSimShiny}
 \alias{launchFossilSimShiny}
-\title{Run the Shiny app in a web browser}
+\title{Run the app in a web browser}
 \usage{
 launchFossilSimShiny(inbrowser = TRUE)
 }
 \arguments{
 \item{inbrowser}{Launch the app inside the system's default browser or not.}
 }
+\value{
+No return value, called for side effects.
+}
 \description{
-This the function used to launch the FossilSim shiny app.
-If want a look at the inner workings of the app, take a look at the ./inst/shinyApp/ folder.
+This the function used to launch the shiny app.
 }
