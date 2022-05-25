@@ -1,9 +1,9 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Converted the DESCRIPTION title to title case.
+* Wrote package names in single quotes in title and description.
 
-* Changed the urls in the documentation to canonical form.
+* added missing Rd tags and an example to `launchFossilSimShiny.Rd`
 
 * Note : the link `http:// your ip address :3838/FossilSimShiny/` in `vignettes/hosting.Rmd` is used for instructional purposes, it is not meant to be a valid address. The user is supposed to replace `your ip address` with his server's ip address.
 
