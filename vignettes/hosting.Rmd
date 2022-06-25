@@ -1,5 +1,5 @@
 ---
-title: "Hosting 'FossilShinyApp' on a Web Server"
+title: "Hosting 'FossilSimShiny' on a Web Server"
 author: "Titouan Chambe"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -25,12 +25,12 @@ Specifically, while we'll only look at serving the app on `Debian 11`, this guid
 * [Preface]
 * [Dependencies]
   * [R]
-  * [Dependencies for building shiny server from source]
+  * [Dependencies for building a Shiny server from source]
   * [R packages we need]
-* [Installing R shiny server]
+* [Installing Shiny Server]
 * [Putting the app on the server]
 * [Firewall tweaks]
-* [Starting the shiny server]
+* [Starting Shiny Server]
 
 ## Preface
 
@@ -89,7 +89,7 @@ $ R
 R version 4.2.0 (2022-04-22) -- "Vigorous Calisthenics"
 ```
 
-### Dependencies for building shiny server from source
+### Dependencies for building a Shiny server from source
 
 These are the dependencies you'll need to build shiny server. Depending on your distribution they may already be pre-installed.\
 \
@@ -118,7 +118,7 @@ Should be pre-installed.
 
 Use `sudo apt-get install git`.
 
-### `R` packages we need
+### R packages we need
 
 Any `R` packages used by the app needs to be installed for all users.
 This means we need to install both the shiny package and the `FossilSim` package for all users.
@@ -128,7 +128,7 @@ sudo su - -c "R -e \"install.packages('shiny', repos='https://cran.rstudio.com/'
 sudo su - -c "R -e \"install.packages('FossilSim')\""
 ```
 
-## Installing `R` shiny server
+## Installing Shiny Server
 
 **Note:** most of this part is referenced from <a href="https://github.com/rstudio/shiny-server/wiki/Building-Shiny-Server-from-Source">here</a>.\
 \
@@ -188,13 +188,13 @@ sudo chown shiny:shiny /var/lib/shiny-server/
 ## Putting the app on the server
 
 The `/srv/shiny-server` directory is where we house our apps.</br>
-I recommend creating a new directory: `/srv/shiny-server/FossilShinyApp/`.
+I recommend creating a new directory: `/srv/shiny-server/FossilSimShinyApp/`.
 
-Then, you can grab the `app.R` file, the `/www/` folder and the `/R/` folder from <a href = "https://github.com/fossilsim/shiny/tree/master/inst/shinyApp">here</a> and copy them to `/srv/shiny-server/FossilShinyApp/`.
+Then, you can grab the `app.R` file, the `/www/` folder and the `/R/` folder from <a href = "https://github.com/fossilsim/shiny/tree/master/inst/shinyApp">here</a> and copy them to `/srv/shiny-server/FossilSimShinyApp/`.
 
 ## Firewall tweaks
 
-By default, shiny server is set to use port **3838**.</br> *Author's note: I have no idea why they chose this port.*\
+By default, Shiny Server is set to use port **3838**.</br> *Author's note: I have no idea why they chose this port.*\
 \
 You'll need to open the port.\
 \
@@ -202,7 +202,7 @@ If you are using uncomplicated firewall, you can run the command: `sudo ufw allo
 
 Furthermore you can change the port used in `/etc/shiny-server/shiny-server.conf`.
 
-## Starting the shiny server
+## Starting Shiny Server
 
 As you probably noticed, during the installation, we created a new user called shiny.
 We'll use this user to start and stop our shiny operations.
