@@ -4,7 +4,7 @@ author: "Titouan Chambe"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{fossilSimShiny}
+  %\VignetteIndexEntry{User guide}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -23,7 +23,7 @@ This vignette provides information on how to use the `FossilSimShiny` applicatio
 * [Launching the app]
 * [Phylogenetic Tree]
   * [Generating a Tree]
-  * [Importing a tree from the Newick format]
+  * [Importing a tree from Newick format]
 * [Generating Taxonomy]
 * [Simulating Fossils]
 * [Saving your tree as a `.png`]
@@ -85,7 +85,7 @@ knitr::include_graphics("images/tree-menu-click-sim.png")
 cap = "**Fig. 3**. Generating a tree from set parameters."
 ```
 
-### Importing a tree from the `Newick` format
+### Importing a tree from Newick format
 
 To use your own trees, simply tick the user tree check box and paste your `Newick` string inside the designated text box below.\
 \
