@@ -11,6 +11,7 @@ library(shiny)
 
 # Main UI --- ---
 ui = fluidPage(
+  shinyjs::useShinyjs(),
   
   # Import CSS for formatting ---
   tags$link(rel = "stylesheet", type = "text/css", href = "style.css"),
@@ -57,6 +58,7 @@ ui = fluidPage(
 
 # Main Server Function --- ---
 server <- function(input, output) {
+  shinyjs::showLog()
   
   # Here we create the different keys for our tabs ---
   # Each tab has a key specific to it, this is what allows us to manage our data between tabs

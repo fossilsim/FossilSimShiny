@@ -13,7 +13,7 @@ Shiny.addCustomMessageHandler('loading', function(a) {
 });
 
 // Start loading is client side, whenever user presses a button (local)
-var listOfButtons = ["simtree", "simtax", "newfossils"];
+var listOfButtons = ["simtree", "simtax", "simfossils"];
 
 for (let i = 0; i < listOfButtons.length; i++) {
 

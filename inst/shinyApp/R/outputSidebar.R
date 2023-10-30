@@ -20,39 +20,39 @@ outputSidebar <- function(id) {
   tagList(
     
     fixedPanel(id=NS(id, "outputDisplay"),
-      
-      tabsetPanel(id = NS(id, "outputTabset"),
-      
-      # Initial tab ---
-      tabPanel(
-        
-        initialTabName,
-        
-        # This is the view selector : tree, taxonomy, tree+fossils ---
-        fixedPanel(id = NS(id, paste(initialTabName, "ifixedview", sep="")),
-          
-                   selectInput(inputId = NS(id, paste(initialTabName, "dropview", sep = "")),
-                               label="", choices = c("tree", "taxonomy", "tree+fossils")),
-                               top = "40px", right = "5%", width = "15%", height="5vh"),
-        
-        # Main plot output ---
-        plotOutput(outputId = NS(id, paste(initialTabName, "tree", sep="")),
-                   width = "100%", height = "85vh"),
-        
-      ),
-      
-      # New tab button ---
-      tabPanel(
-        "+",
-        ""
-      )
-    ),
-      
-    # Set size of output panel 
-    #todo -- make it react to different screen resolution
-    left = "33%",
-    top= "60px",
-    width = "67%"
+               
+               tabsetPanel(id = NS(id, "outputTabset"),
+                           
+                           # Initial tab ---
+                           tabPanel(
+                             
+                             initialTabName,
+                             
+                             # This is the view selector : tree, taxonomy, tree+fossils ---
+                             fixedPanel(id = NS(id, paste(initialTabName, "ifixedview", sep="")),
+                                        
+                                        selectInput(inputId = NS(id, paste(initialTabName, "dropview", sep = "")),
+                                                    label="", choices = c("tree", "taxonomy", "tree+fossils")),
+                                        top = "40px", right = "5%", width = "15%", height="5vh"),
+                             
+                             # Main plot output ---
+                             plotOutput(outputId = NS(id, paste(initialTabName, "tree", sep="")),
+                                        width = "100%", height = "85vh"),
+                             
+                           ),
+                           
+                           # New tab button ---
+                           tabPanel(
+                             "+",
+                             ""
+                           )
+               ),
+               
+               # Set size of output panel 
+               #todo -- make it react to different screen resolution
+               left = "33%",
+               top= "60px",
+               width = "67%"
     )
   )
 }
@@ -86,20 +86,14 @@ outputSidebarServer <- function(id, v, k) {
         
         output[[paste(k,"tree",sep="")]] <- renderPlot( {
           
-          # Newick tree import
-          if(v$current$usertree)
-            validate(need(!is.null(ape::read.tree(text = v$current$newick)) , "Specify newick string"))
-          else {
-            validate(need( ((v$current$mu/v$current$lambda) < 0.9), "Turnover a bit too high! Be kind to the server - try a lower extinction rate!"))
-            validate(need( (v$current$tips < 101), "Please keep the number of tips under one hundred ~ thank you."))
-          }
-          
-          validate(need( (v$current$taxonomybeta >= 0 && v$current$taxonomybeta <= 1 && v$current$taxonomylambda >= 0 && v$current$taxonomylambda <= 1), "Rates need to be between one and zero."))
-          
+          validate(need( (v$current$taxonomybeta >= 0 && v$current$taxonomybeta <= 1), "Probability of bifurcation needs to be between 0 and 1"))
           
           # Check if there is a tree
-          if(is.null(v$current$tree)) return()
-    
+          if(is.null(v$current$tree)) {
+            session$sendCustomMessage("loading", FALSE)
+            return()
+          }
+          
           # Show fossil taxonomy
           if(v$current$showtaxonomy) {
             validate(need(!is.null(v$current$tax), "No taxomony..."))
@@ -112,7 +106,7 @@ outputSidebarServer <- function(id, v, k) {
           
           # Temporary
           #todo -- Allow user to tweak this
-          wd = FossilSim::sim.gradient(v$current$strata)
+          if(!is.null(v$current$strata)) wd = FossilSim::sim.gradient(v$current$strata)
           
           # View 1) tree : display tree with empty fossils
           if (input[[paste(v$currentTab, "dropview", sep="")]] == "tree"){
@@ -130,39 +124,40 @@ outputSidebarServer <- function(id, v, k) {
                  reconstructed = v$current$reconstructed,
                  show.tip.label = v$current$showtips,
                  align.tip.label = TRUE)
-          
-          
+            
+            
           }
           
           # View 2) taxonomy : displays the generated taxonomy
           if (input[[paste(v$currentTab, "dropview", sep="")]] == "taxonomy"){
-            validate(need(!is.null(v$current$tax), "Please simulate taxomony..."))
+            validate(need(!is.null(v$current$tax), "No taxonomy found, please simulate a taxomony."))
             if(!all(v$current$tree$edge %in% v$current$tax$edge)) return()
             plot(v$current$tax, v$current$tree, legend.position = "bottomleft")
           }
           
           # View 3) tree+fossils : displays the tree with the fossils on top
           if (input[[paste(v$currentTab, "dropview", sep="")]] == "tree+fossils"){
-          plot(v$current$fossils,
-               v$current$tree,
-               taxonomy = v$current$tax,
-               show.tree = v$current$showtree,
-               show.ranges = v$current$showranges,
-               show.fossils = v$current$showfossils,
-               show.strata = v$current$showstrata,
-               show.taxonomy = v$current$showtaxonomy,
-               
-               # Only for Holland 95
-               show.proxy = (v$current$showsamplingproxy && v$current$fossilModelName == "Holland"),
-               proxy.data = wd,
-               strata = v$current$strata,
-               
-               reconstructed = v$current$reconstructed,
-               show.tip.label = v$current$showtips,
-               align.tip.label = TRUE)
+            validate(need(!is.null(v$current$fossils), "No fossils found, please simulate fossils."))
+            plot(v$current$fossils,
+                 v$current$tree,
+                 taxonomy = v$current$tax,
+                 show.tree = v$current$showtree,
+                 show.ranges = v$current$showranges,
+                 show.fossils = v$current$showfossils,
+                 show.strata = v$current$showstrata,
+                 show.taxonomy = v$current$showtaxonomy,
+                 
+                 # Only for Holland 95
+                 show.proxy = (v$current$showsamplingproxy && v$current$fossilModelName == "Holland"),
+                 proxy.data = wd,
+                 strata = v$current$strata,
+                 
+                 reconstructed = v$current$reconstructed,
+                 show.tip.label = v$current$showtips,
+                 align.tip.label = TRUE)
           }
         })
-        }
+      }
       
       
       
@@ -181,7 +176,7 @@ outputSidebarServer <- function(id, v, k) {
       # Last is the fossil+tree view
       observeEvent(v$current$fossils, {
         if (length(v$current$fossils$sp) != 0) {
-        updateSelectInput(session, paste(v$currentTab, "dropview", sep=""), selected = "tree+fossils")}
+          updateSelectInput(session, paste(v$currentTab, "dropview", sep=""), selected = "tree+fossils")}
       })
       
       
@@ -212,18 +207,18 @@ outputSidebarServer <- function(id, v, k) {
           # each component has an id consisting of it's tab id and it's component name
           # ex : for the tab "ii", the component "dropview" is named "iidropview"
           insertTab(inputId = "outputTabset",
-            
-            tabPanel(title = v$currentTab,
-              
-              fixedPanel(id = NS(id, paste(v$currentTab, "fixedview", sep="")),
-
-                         selectInput(inputId = NS(id, paste(v$currentTab, "dropview", sep="")),
-                                     label="", choices = c("tree", "taxonomy", "tree+fossils")),
-                                     top = "40px", right = "5%", width = "15%", height="5vh"),
-                                                               
-                                                       
-              plotOutput(outputId = NS(id, paste(v$currentTab, "tree", sep="")),
-                         width = "100%", height = "85vh")), target = "+", position="before")
+                    
+                    tabPanel(title = v$currentTab,
+                             
+                             fixedPanel(id = NS(id, paste(v$currentTab, "fixedview", sep="")),
+                                        
+                                        selectInput(inputId = NS(id, paste(v$currentTab, "dropview", sep="")),
+                                                    label="", choices = c("tree", "taxonomy", "tree+fossils")),
+                                        top = "40px", right = "5%", width = "15%", height="5vh"),
+                             
+                             
+                             plotOutput(outputId = NS(id, paste(v$currentTab, "tree", sep="")),
+                                        width = "100%", height = "85vh")), target = "+", position="before")
           
           # If all of the tab keys have been used, we delete the "+" tab
           if (v$createdKeys[length(v$createdKeys)] == keys[length(keys)]) {
@@ -232,7 +227,7 @@ outputSidebarServer <- function(id, v, k) {
           
           # Set the new tab as selected in the UI
           updateTabsetPanel(session, "outputTabset", v$currentTab)
-        
+          
         }
         
         # Change tab --
