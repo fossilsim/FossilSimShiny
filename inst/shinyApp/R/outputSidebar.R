@@ -96,11 +96,6 @@ outputSidebarServer <- function(id, v, k) {
           # Show fossil taxonomy
           if(v$current$showtaxonomy) {
             validate(need(!is.null(v$current$tax), "No taxomony..."))
-            
-            # Synchronize fossils and taxonomy
-            #todo -- move this to generate fossil or taxonomy
-            if(!attr(v$current$fossils,"from.taxonomy"))
-              v$current$fossils = FossilSim::reconcile.fossils.taxonomy(v$current$fossils, v$current$tax)
           }
           
           # View 1) tree : display tree with empty fossils
@@ -113,9 +108,6 @@ outputSidebarServer <- function(id, v, k) {
                  show.fossils = v$current$showfossils,
                  show.strata = v$current$showstrata,
                  show.taxonomy = v$current$showtaxonomy,
-                 # show.proxy = FALSE,
-                 # proxy.data = wd,
-                 # strata = v$current$current$strata,
                  reconstructed = v$current$reconstructed,
                  show.tip.label = v$current$showtips,
                  align.tip.label = TRUE)
@@ -126,15 +118,20 @@ outputSidebarServer <- function(id, v, k) {
           # View 2) taxonomy : displays the generated taxonomy
           if (input[[paste(v$currentTab, "dropview", sep="")]] == "taxonomy"){
             validate(need(!is.null(v$current$tax), "No taxonomy found, please simulate a taxomony."))
-            if(!all(v$current$tree$edge %in% v$current$tax$edge)) return()
-            plot(v$current$tax, v$current$tree, legend.position = "bottomleft")
+            validate(need(all(v$current$tree$edge %in% v$current$tax$edge), "Taxonomy incompatible with tree, please resimulate taxonomy."))
+            
+            plot(v$current$tax, v$current$tree, legend.position = "bottomleft",
+                 show.tip.label = v$current$showtips,
+                 align.tip.label = TRUE)
           }
           
           # View 3) tree+fossils : displays the tree with the fossils on top
-          if (input[[paste(v$currentTab, "dropview", sep="")]] == "tree+fossils"){
+          if (input[[paste(v$currentTab, "dropview", sep="")]] == "tree+fossils") {
             validate(need(!is.null(v$current$fossils), "No fossils found, please simulate fossils."))
             
             show.depth = (v$current$`enviro-dep-showsamplingproxy`) && (!is.null(v$current$fossilModelName) && v$current$fossilModelName == "Holland")
+            strata = if(v$current$showstrata && (!is.null(v$current$fossilModelName) && v$current$fossilModelName == "Holland")) v$current$strata else 1
+            int.ages = if(v$current$showstrata && (!is.null(v$current$fossilModelName) && v$current$fossilModelName == "Non-Uniform")) v$current$int.ages else NULL
             
             plot(v$current$fossils,
                  v$current$tree,
@@ -148,7 +145,10 @@ outputSidebarServer <- function(id, v, k) {
                  # Only for Holland 95
                  show.proxy = show.depth,
                  proxy.data = v$current$wd,
-                 strata = if(is.null(v$current$strata)) 1 else v$current$strata,
+                 strata = strata,
+                 
+                 # Only for time-dependent
+                interval.ages = int.ages,
                  
                  reconstructed = v$current$reconstructed,
                  show.tip.label = v$current$showtips,

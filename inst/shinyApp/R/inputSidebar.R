@@ -239,7 +239,8 @@ inputSidebarServer <- function(id, v) {
       
       # List of all of our different inputs, incredibly useful to perform mass actions ---
       # Does not need to be reactive as we avoid creating new inputs during run time
-      allNumericInputs = c("lambda", "mu", "tips", "taxonomylambda", "taxonomybeta", "psi", "meanrate", "variance", "strata", "pd", "dt", "pa", "rate")
+      allNumericInputs = c("lambda", "mu", "tips", "taxonomylambda", "taxonomybeta", "uniform-psi", "non-uniform-int", "non-uniform-meanrate", "non-uniform-variance", "enviro-dep-strata", 
+                           "enviro-dep-pd", "enviro-dep-dt", "enviro-dep-pa", "lineage-dep-LNrate", "lineage-dep-LNsd")
       allCheckboxInputs = c("showtree", "showtaxonomy", "showfossils", "showranges", "showstrata", "showtips", "reconstructed", "enviro-dep-showsamplingproxy")
       allTextInputs = c("newick")
       
@@ -292,7 +293,8 @@ inputSidebarServer <- function(id, v) {
         validate(need(!v$current$error, v$current$errorMsg))
 
         v$current$tax = FossilSim::sim.taxonomy(tree = v$current$tree, input$taxonomybeta, input$taxonomylambda)
-        v$current$fossils = FossilSim::fossils()
+        if(!attr(v$current$fossils, "from.taxonomy")) v$current$fossils = FossilSim::reconcile.fossils.taxonomy(v$current$fossils, v$current$tax)
+        else v$current$fossils = FossilSim::fossils()
         
         session$sendCustomMessage("loading", FALSE)
       })
@@ -307,7 +309,6 @@ inputSidebarServer <- function(id, v) {
         validate(need(!v$current$error, v$current$errorMsg))
         
         # Here we check which fossil sim tab is selected and simulate fossils
-        #todo -- better way to check selected tab
         
         # i. Uniform Distribution --
         if(input$tabset == listOfTabs$unif) {
@@ -319,22 +320,21 @@ inputSidebarServer <- function(id, v) {
         # ii. Non-Uniform Distribution --
         else if (input$tabset == listOfTabs$timedep) {
           max.age = FossilSim::tree.max(v$current$tree)
-          times = c(0, sort(runif(input$`non-uniform-int` - 1, min = 0, max = max.age)), max.age)
+          v$current$int.ages = c(0, sort(runif(input$`non-uniform-int` - 1, min = 0, max = max.age)), max.age)
           rates = rlnorm(input$`non-uniform-int`, log(input$`non-uniform-meanrate`), sqrt(input$`non-uniform-variance`))
           v$current$fossilModelName = "Non-Uniform"
-          v$current$fossils = FossilSim::sim.fossils.intervals(v$current$tree, interval.ages = times, rates = rates)
+          v$current$fossils = FossilSim::sim.fossils.intervals(v$current$tree, interval.ages = v$current$int.ages, rates = rates)
         }
         # --<
         
         # iii. Environment Model (Holland, 1995) --
         else if (input$tabset == listOfTabs$envdep) {
-
           v$current$strata = input$`enviro-dep-strata`
-          v$current$wd = FossilSim::sim.gradient(v$current$strata)
+          v$current$wd = FossilSim::sim.gradient(input$`enviro-dep-strata`)
           v$current$fossilModelName = "Holland"
           v$current$fossils = FossilSim::sim.fossils.environment(tree = v$current$tree,
                                                                  max.age = FossilSim::tree.max(v$current$tree),
-                                                                 strata = v$current$strata,
+                                                                 strata = input$`enviro-dep-strata`,
                                                                  proxy.data = v$current$wd,
                                                                  PD = input$`enviro-dep-pd`,
                                                                  DT = input$`enviro-dep-dt`, PA = input$`enviro-dep-pa`)
@@ -345,16 +345,9 @@ inputSidebarServer <- function(id, v) {
         else if (input$tabset == listOfTabs$lindep) {
           dist = function() { rlnorm(1, log(input$`lineage-dep-LNrate`), input$`lineage-dep-LNsd`) }
           
-          # Check if taxonomy has been generated and if it corresponds to the current tree
-          if (is.null(v$current$tax) || !(v$current$tree$edge %in% v$current$tax$edge)) {
-            # If not then stop loading animation and do nothing
-            session$sendCustomMessage("loading", FALSE)
-            return()
-          }
-          
-          rates = FossilSim::sim.trait.values(v$current$rate, taxonomy = v$current$tax, model = "independent", dist = dist)
+          rates = FossilSim::sim.trait.values(dist(), tree = v$current$tree, taxonomy = v$current$tax, model = "independent", dist = dist)
           v$current$fossilModelName = "Lineage"
-          v$current$fossils = FossilSim::sim.fossils.poisson(rates, taxonomy = v$current$tax)
+          v$current$fossils = FossilSim::sim.fossils.poisson(rates, tree = v$current$tree, taxonomy = v$current$tax)
         }
         # --<
         
@@ -369,8 +362,6 @@ inputSidebarServer <- function(id, v) {
         for (inpId in c(allNumericInputs, allCheckboxInputs, allTextInputs)) {
           v$current[[inpId]] = input[[inpId]]
         }
-        # TODO conditional appearance buttons
-        #if (input$tabset )
       })
       
       # On tab change, update all inputs to stored data for that tab ---
