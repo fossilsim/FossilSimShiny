@@ -76,7 +76,7 @@ outputSidebarServer <- function(id, v, k) {
       v$createdKeys = c(keys[1], keys[2])
       
       
-      # Diplaying plots ---
+      # Displaying plots ---
       
       # for every tab
       for (k in keys) {
@@ -85,14 +85,13 @@ outputSidebarServer <- function(id, v, k) {
         # in reality only $current plot will ever be changed
         
         output[[paste(k,"tree",sep="")]] <- renderPlot( {
+          session$sendCustomMessage("loading", FALSE)
           
           validate(need( (v$current$taxonomybeta >= 0 && v$current$taxonomybeta <= 1), "Probability of bifurcation needs to be between 0 and 1"))
+          validate(need(is.null(v$current$error) || !v$current$error, v$current$errorMsg))
           
           # Check if there is a tree
-          if(is.null(v$current$tree)) {
-            session$sendCustomMessage("loading", FALSE)
-            return()
-          }
+          if(is.null(v$current$tree)) return()
           
           # Show fossil taxonomy
           if(v$current$showtaxonomy) {
@@ -103,10 +102,6 @@ outputSidebarServer <- function(id, v, k) {
             if(!attr(v$current$fossils,"from.taxonomy"))
               v$current$fossils = FossilSim::reconcile.fossils.taxonomy(v$current$fossils, v$current$tax)
           }
-          
-          # Temporary
-          #todo -- Allow user to tweak this
-          if(!is.null(v$current$strata)) wd = FossilSim::sim.gradient(v$current$strata)
           
           # View 1) tree : display tree with empty fossils
           if (input[[paste(v$currentTab, "dropview", sep="")]] == "tree"){
@@ -138,6 +133,9 @@ outputSidebarServer <- function(id, v, k) {
           # View 3) tree+fossils : displays the tree with the fossils on top
           if (input[[paste(v$currentTab, "dropview", sep="")]] == "tree+fossils"){
             validate(need(!is.null(v$current$fossils), "No fossils found, please simulate fossils."))
+            
+            show.depth = (v$current$`enviro-dep-showsamplingproxy`) && (!is.null(v$current$fossilModelName) && v$current$fossilModelName == "Holland")
+            
             plot(v$current$fossils,
                  v$current$tree,
                  taxonomy = v$current$tax,
@@ -148,9 +146,9 @@ outputSidebarServer <- function(id, v, k) {
                  show.taxonomy = v$current$showtaxonomy,
                  
                  # Only for Holland 95
-                 show.proxy = (v$current$showsamplingproxy && v$current$fossilModelName == "Holland"),
-                 proxy.data = wd,
-                 strata = v$current$strata,
+                 show.proxy = show.depth,
+                 proxy.data = v$current$wd,
+                 strata = if(is.null(v$current$strata)) 1 else v$current$strata,
                  
                  reconstructed = v$current$reconstructed,
                  show.tip.label = v$current$showtips,
@@ -158,8 +156,6 @@ outputSidebarServer <- function(id, v, k) {
           }
         })
       }
-      
-      
       
       # Dropdown/View selector ----
       # Priority is very important (last to first)

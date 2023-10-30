@@ -206,7 +206,7 @@ inputSidebarUI <- function(id) {
                checkboxInput(inputId = ns("showstrata"), "Show strata", value = FALSE),
                checkboxInput(inputId = ns("showtips"), "Show tip labels", value = FALSE),
                checkboxInput(inputId = ns("reconstructed"), "Show reconstructed tree", value = FALSE),
-               checkboxInput(inputId = ns("enviro-dep-showsamplingproxy"), "Show depth used in sampling", value = TRUE),
+               checkboxInput(inputId = ns("enviro-dep-showsamplingproxy"), "Show depth used in sampling", value = FALSE),
                
       ),
       # ---<
@@ -240,7 +240,7 @@ inputSidebarServer <- function(id, v) {
       # List of all of our different inputs, incredibly useful to perform mass actions ---
       # Does not need to be reactive as we avoid creating new inputs during run time
       allNumericInputs = c("lambda", "mu", "tips", "taxonomylambda", "taxonomybeta", "psi", "meanrate", "variance", "strata", "pd", "dt", "pa", "rate")
-      allCheckboxInputs = c("showtree", "showtaxonomy", "showfossils", "showranges", "showstrata", "showtips", "reconstructed", "showsamplingproxy")
+      allCheckboxInputs = c("showtree", "showtaxonomy", "showfossils", "showranges", "showstrata", "showtips", "reconstructed", "enviro-dep-showsamplingproxy")
       allTextInputs = c("newick")
       
       listOfTabs = list(unif = "<p id=\"inputSidebar-uniform\">Uniform</p>", timedep = "<p id=\"inputSidebar-non-uniform\">Time-dependent</p>",
@@ -248,8 +248,17 @@ inputSidebarServer <- function(id, v) {
       
       # Simulate tree function ---
       observeEvent(input$simtree, {
-        validate(need( ((v$current$mu/v$current$lambda) < 0.9), "Turnover a bit too high! Be kind to the server - try a lower extinction rate!"))
-        validate(need( (v$current$tips < 101), "Please keep the number of tips under one hundred ~ thank you."))
+        v$current$error = FALSE
+        
+        if (v$current$mu/v$current$lambda >= 0.9) {
+          v$current$error = TRUE
+          v$current$errorMsg = "To avoid overloading the server, please keep the turnover under 0.9."
+        }
+        if(v$current$tips > 100) {
+          v$current$error = TRUE
+          v$current$errorMsg = "To avoid overloading the server, please keep the number of tips under 100."
+        }
+        validate(need(!v$current$error, v$current$errorMsg))
         
         v$current$tree = TreeSim::sim.bd.taxa(input$tips, 1, input$lambda, input$mu)[[1]]
         v$current$fossils = FossilSim::fossils()
@@ -260,9 +269,14 @@ inputSidebarServer <- function(id, v) {
       
       # Newick function ---
       observeEvent(input$usertree, {
-        validate(need(!is.null(input$newick), "No tree found, please input the tree as Newick"))
-        v$current$tree = ape::read.tree(text = input$newick)
+        v$current$error = FALSE
+        if (input$newick == "" || input$newick == "Enter newick string...") {
+          v$current$error = TRUE
+          v$current$errorMsg = "No tree found, please input the tree as Newick."
+        }
+        validate(need(!v$current$error, v$current$errorMsg))
         
+        v$current$tree = ape::read.tree(text = input$newick)
         v$current$fossils = FossilSim::fossils()
         
         session$sendCustomMessage("loading", FALSE)
@@ -270,9 +284,13 @@ inputSidebarServer <- function(id, v) {
       
       # Simulate taxonomy function ---
       observeEvent(input$simtax, {
-        if(is.null(v$current$tree)) return() # check if there is tree #todo -- error message
-        validate(need( (input$taxonomybeta >= 0 && input$taxonomybeta <= 1 && input$taxonomylambda >= 0 && input$taxonomylambda <= 1), "Rates need to be between one and zero."))
-        
+        v$current$error = FALSE
+        if (is.null(v$current$tree)) {
+          v$current$error = TRUE
+          v$current$errorMsg = "No tree found, please simulate or input a tree first."
+        }
+        validate(need(!v$current$error, v$current$errorMsg))
+
         v$current$tax = FossilSim::sim.taxonomy(tree = v$current$tree, input$taxonomybeta, input$taxonomylambda)
         v$current$fossils = FossilSim::fossils()
         
@@ -281,7 +299,12 @@ inputSidebarServer <- function(id, v) {
       
       # Simulate fossils function ---
       observeEvent(input$simfossils, {
-        if(is.null(v$current$tree)) return() # todo -- error message
+        v$current$error = FALSE
+        if (is.null(v$current$tree)) {
+          v$current$error = TRUE
+          v$current$errorMsg = "No tree found, please simulate or input a tree first."
+        }
+        validate(need(!v$current$error, v$current$errorMsg))
         
         # Here we check which fossil sim tab is selected and simulate fossils
         #todo -- better way to check selected tab
@@ -289,15 +312,15 @@ inputSidebarServer <- function(id, v) {
         # i. Uniform Distribution --
         if(input$tabset == listOfTabs$unif) {
           v$current$fossilModelName = "Uniform"
-          v$current$fossils = FossilSim::sim.fossils.poisson(tree = v$current$tree, rate = input$psi)
+          v$current$fossils = FossilSim::sim.fossils.poisson(tree = v$current$tree, rate = input$`uniform-psi`)
         }
         # --<
         
         # ii. Non-Uniform Distribution --
         else if (input$tabset == listOfTabs$timedep) {
           max.age = FossilSim::tree.max(v$current$tree)
-          times = c(0, sort(runif(input$int-1, min = 0, max = max.age)), max.age)
-          rates = rlnorm(input$int, log(input$meanrate), sqrt(input$variance))
+          times = c(0, sort(runif(input$`non-uniform-int` - 1, min = 0, max = max.age)), max.age)
+          rates = rlnorm(input$`non-uniform-int`, log(input$`non-uniform-meanrate`), sqrt(input$`non-uniform-variance`))
           v$current$fossilModelName = "Non-Uniform"
           v$current$fossils = FossilSim::sim.fossils.intervals(v$current$tree, interval.ages = times, rates = rates)
         }
@@ -305,20 +328,22 @@ inputSidebarServer <- function(id, v) {
         
         # iii. Environment Model (Holland, 1995) --
         else if (input$tabset == listOfTabs$envdep) {
-          wd = FossilSim::sim.gradient(input$strata)
+
+          v$current$strata = input$`enviro-dep-strata`
+          v$current$wd = FossilSim::sim.gradient(v$current$strata)
           v$current$fossilModelName = "Holland"
           v$current$fossils = FossilSim::sim.fossils.environment(tree = v$current$tree,
                                                                  max.age = FossilSim::tree.max(v$current$tree),
-                                                                 strata = input$strata,
-                                                                 proxy.data = wd,
-                                                                 PD = input$pd,
-                                                                 DT = input$dt,PA = input$pa)
+                                                                 strata = v$current$strata,
+                                                                 proxy.data = v$current$wd,
+                                                                 PD = input$`enviro-dep-pd`,
+                                                                 DT = input$`enviro-dep-dt`, PA = input$`enviro-dep-pa`)
         }
         # --<
         
         # iv. Lineage Model --
         else if (input$tabset == listOfTabs$lindep) {
-          dist = function() { rlnorm(1, log(v$current$rate), 1) }
+          dist = function() { rlnorm(1, log(input$`lineage-dep-LNrate`), input$`lineage-dep-LNsd`) }
           
           # Check if taxonomy has been generated and if it corresponds to the current tree
           if (is.null(v$current$tax) || !(v$current$tree$edge %in% v$current$tax$edge)) {
