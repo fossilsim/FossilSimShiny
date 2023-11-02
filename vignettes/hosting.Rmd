@@ -190,7 +190,7 @@ sudo chown shiny:shiny /var/lib/shiny-server/
 The `/srv/shiny-server` directory is where we house our apps.</br>
 I recommend creating a new directory: `/srv/shiny-server/FossilSimShinyApp/`.
 
-Then, you can grab the `app.R` file, the `/www/` folder and the `/R/` folder from <a href = "https://github.com/fossilsim/shiny/tree/master/inst/shinyApp">here</a> and copy them to `/srv/shiny-server/FossilSimShinyApp/`.
+Then, you can grab the `app.R` file, the `/www/` folder and the `/R/` folder from <a href = "https://github.com/fossilsim/FossilSimShiny/tree/master/inst/shinyApp">here</a> and copy them to `/srv/shiny-server/FossilSimShinyApp/`.
 
 ## Firewall tweaks
 
@@ -232,7 +232,7 @@ http:// your ip address :3838/FossilSimShiny/
 
 ## Further Reading
 
-* <a href="https://docs.rstudio.com/shiny-server/">Administrative guide to shiny server</a>
+* <a href="https://docs.posit.co/shiny-server/">Administrative guide to shiny server</a>
 
 \
 \
