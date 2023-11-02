@@ -45,7 +45,9 @@ var tooltip_dict = {
 	"reconstructed":         "Show only the reconstructed tree (based on the current fossil data and full extant sampling).",
 	"enviro-dep-showsamplingproxy":	 "Show the depth values used as environmental proxy (only for depth-dependent fossil sampling).",
 	
-	"saveas":                "Click here to save your tree as an image, you can also just simply right click on the tree select save as."
+	"saveas":                "Save the current tab as an image, you can also just simply right click on the image and select save as.",
+	"imgformat":			 "Image format to save as.",
+	"dldata":				 "Download the simulated tree, taxonomy and fossils as RData."
 	
 };
 

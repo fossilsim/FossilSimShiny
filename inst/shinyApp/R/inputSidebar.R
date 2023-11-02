@@ -212,12 +212,9 @@ inputSidebarUI <- function(id) {
       # ---<
       
       # V. Save Tree ---
-      h3("Save your Tree"),
+      h3("Save your simulation"),
       
-      actionButton(ns("saveas"), "Save tree as image..."),
-      
-      # Import Javascript for saveas functionality
-      tags$script(src = "saveas.js"),
+      downloadButton(ns("dldata"), "Download the data"),
       
       tags$script(src = "protodashboard.js"),
       # ---<
@@ -291,7 +288,7 @@ inputSidebarServer <- function(id, v) {
           v$current$errorMsg = "No tree found, please simulate or input a tree first."
         }
         validate(need(!v$current$error, v$current$errorMsg))
-
+        
         v$current$tax = FossilSim::sim.taxonomy(tree = v$current$tree, input$taxonomybeta, input$taxonomylambda)
         if(!attr(v$current$fossils, "from.taxonomy")) v$current$fossils = FossilSim::reconcile.fossils.taxonomy(v$current$fossils, v$current$tax)
         else v$current$fossils = FossilSim::fossils()
@@ -354,6 +351,13 @@ inputSidebarServer <- function(id, v) {
         session$sendCustomMessage("loading", FALSE)
         
       })
+      
+      output$dldata <- downloadHandler(
+        filename = function() {paste0("data-", Sys.Date(), ".RData")},
+        content = function(file) {
+          data = list(tree = v$current$tree, taxonomy = v$current$tax, fossils = v$current$fossils)
+          save(data, file = file)
+        })
       
       # Input synchronization with data ---
       # When an input is changed run through all of the inputs and grabs the data
