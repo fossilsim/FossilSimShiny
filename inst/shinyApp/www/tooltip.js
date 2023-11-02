@@ -58,6 +58,7 @@ clearTooltip();
 var tooltip_keys = Object.keys(tooltip_dict);
 for (let i = 0; i < tooltip_keys.length; i++) {
 	var tooltip_element = document.getElementById("inputSidebar-" + tooltip_keys[i]);
+	if(tooltip_element == null) tooltip_element = document.getElementById("outputSidebar-" + tooltip_keys[i]);
 	
 	// Adding a mousehover function that displays or clears the correct tooltip for each element
 	tooltip_element.addEventListener('mouseenter', e => {
