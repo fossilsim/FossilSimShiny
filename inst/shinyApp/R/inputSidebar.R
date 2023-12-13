@@ -277,8 +277,16 @@ inputSidebarServer <- function(id, v) {
         }
         validate(need(!v$current$error, v$current$errorMsg))
         
-        v$current$tree = ape::read.tree(text = input$newick)
+        v$current$tree = try(ape::read.tree(text = input$newick))
+        if(is.null(v$current$tree)) v$current$tree = try(ape::read.tree(text = paste0(input$newick, ";"))) #ape requires the final ';' for some reason
+        
+        if(class(v$current$tree) == "try-error") v$current$tree = NULL
+        if(is.null(v$current$tree)) {
+          v$current$error = TRUE
+          v$current$errorMsg = "Could not read tree, please check the Newick string."
+        }
         v$current$fossils = FossilSim::fossils()
+        validate(need(!v$current$error, v$current$errorMsg))
         
         session$sendCustomMessage("loading", FALSE)
       })
