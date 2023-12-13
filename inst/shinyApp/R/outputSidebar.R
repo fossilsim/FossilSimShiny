@@ -50,7 +50,7 @@ outputSidebar <- function(id) {
                
                # Set size of output panel 
                #todo -- make it react to different screen resolution
-               left = "33%", top= "120px", width = "67%"
+               left = "33%", top= "120px", bottom = "100px", width = "67%"
     )
   )
 }
@@ -87,6 +87,7 @@ outputSidebarServer <- function(id, v, k) {
           validate(need(!is.null(v$current$tax), "No taxomony..."))
         }
         
+        par(oma = c(8, 0, 0, 0))
         # View 1) tree : display tree with empty fossils
         if (input[[paste0(v$currentTab, "dropview")]] == "tree"){
           plot(FossilSim::fossils(),

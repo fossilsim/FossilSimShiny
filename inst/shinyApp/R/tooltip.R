@@ -5,7 +5,7 @@ tooltip <- function(id) {
       p(id = "tooltip", "i : "),
       left = 0,
       bottom = 0,
-      height = "50px",
+      height = "40px",
       width="100%",
       style = "background-color: #54aeff; font-size: 16px;",
     ),

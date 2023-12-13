@@ -258,7 +258,10 @@ inputSidebarServer <- function(id, v) {
         }
         validate(need(!v$current$error, v$current$errorMsg))
         
-        v$current$tree = TreeSim::sim.bd.taxa(input$tips, 1, input$lambda, input$mu)[[1]]
+        repeat {
+          v$current$tree = try(TreeSim::sim.bd.taxa(input$tips, 1, input$lambda, input$mu)[[1]])
+          if(class(v$current$tree) != "try-error") break
+        }
         v$current$fossils = FossilSim::fossils()
         v$current$tax = NULL # set taxonomy to NULL to avoid issues as old taxonomy will very likely not line up with a new tree
         
