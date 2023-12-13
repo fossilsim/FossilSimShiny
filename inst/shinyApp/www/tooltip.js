@@ -16,21 +16,21 @@ var tooltip_dict = {
 	"simtax":                "Click here to simulate the taxonomy.",	
 	
 	"uniform":               "Uniform fossil sampling (with constant rate across the tree).",
-	"non-uniform":           "Time-dependent fossil sampling (with a piecewise-constant rate).",
+	"non-uniform":           "Piecewise-constant (=skyline) time-dependent fossil sampling. Rates are drawn for each interval from a lognormal distribution.",
 	"enviro-dep":			 "Depth-dependent fossil sampling (following Holland, 1995).",
-	"lineage-dep":			 "Lineage-dependent fossil sampling with rates following a lognormal distribution.",
-
+	"lineage-dep":			 "Lineage-dependent fossil sampling. Rates are drawn for each species from a lognormal distribution.",
+	
 	"uniform-psi" :			 "Set the uniform fossil sampling rate, commonly to referred as Ψ.",
-
+	
 	"non-uniform-int" :		 "Set the number of time intervals for the fossil sampling rate.",
 	"non-uniform-meanrate" : "Set the mean fossil sampling rate across all intervals.",
 	"non-uniform-variance" : "Set the variance of the fossil sampling rates across all intervals.",
-
+	
 	"enviro-dep-strata" :	 "Set the number of time intervals for the fossil sampling rate.",
 	"enviro-dep-pd" :		 "Set the preferred depth (= mean of the sampling distribution) for all time intervals.",
 	"enviro-dep-dt" :		 "Set the depth tolerance (= standard deviation of the sampling distribution) for all time intervals.",
 	"enviro-dep-pa" :		 "Set the peak abundance (= maximum sampling probability per interval) for all time intervals.",
-
+	
 	"lineage-dep-LNrate" :	 "Set the mean fossil sampling rate across all lineages.",
 	"lineage-dep-LNsd" : 	 "Set the standard deviation of the fossil sampling rates across all lineages.",
 	
@@ -68,6 +68,17 @@ for (let i = 0; i < tooltip_keys.length; i++) {
 	tooltip_element.addEventListener('mouseleave', e => {
 		clearTooltip();
 	});
+	
+	var tooltip_element = document.getElementById("inputSidebar-" + tooltip_keys[i] + "-label");
+	if(tooltip_element != null) {
+		tooltip_element.addEventListener('mouseenter', e => {
+			setTooltip(tooltip_keys[i]);
+		});
+		
+		tooltip_element.addEventListener('mouseleave', e => {
+			clearTooltip();
+		});
+	}
 }
 
 // Function that sets the tooltip with the right text, to be called when mouse enters element

@@ -139,7 +139,7 @@ inputSidebarUI <- function(id) {
                            # --<
                            
                            # iii. Environment Model (Holland, 1995) --
-                           tabPanel(p("Environment-dependent", id = ns("enviro-dep")),
+                           tabPanel(p("Depth-dependent", id = ns("enviro-dep")),
                                     HTML("</br>"),
                                     numericInput(inputId = ns("enviro-dep-strata"),
                                                  label = "Strata",
@@ -242,7 +242,7 @@ inputSidebarServer <- function(id, v) {
       allTextInputs = c("newick")
       
       listOfTabs = list(unif = "<p id=\"inputSidebar-uniform\">Uniform</p>", timedep = "<p id=\"inputSidebar-non-uniform\">Time-dependent</p>",
-                        envdep = "<p id=\"inputSidebar-enviro-dep\">Environment-dependent</p>", lindep = "<p id=\"inputSidebar-lineage-dep\">Lineage-dependent</p>")
+                        envdep = "<p id=\"inputSidebar-enviro-dep\">Depth-dependent</p>", lindep = "<p id=\"inputSidebar-lineage-dep\">Lineage-dependent</p>")
       
       # Simulate tree function ---
       observeEvent(input$simtree, {
@@ -307,6 +307,14 @@ inputSidebarServer <- function(id, v) {
         session$sendCustomMessage("loading", FALSE)
       })
       
+      validateRates = function(rates) {
+        if(any(rates > 10)) {
+          v$current$error = TRUE
+          v$current$errorMsg = "Current parameters lead to high fossil sampling rates. Please adjust or try again."
+        }
+        validate(need(!v$current$error, v$current$errorMsg))
+      }
+      
       # Simulate fossils function ---
       observeEvent(input$simfossils, {
         v$current$error = FALSE
@@ -330,6 +338,7 @@ inputSidebarServer <- function(id, v) {
           max.age = FossilSim::tree.max(v$current$tree)
           v$current$int.ages = c(0, sort(runif(input$`non-uniform-int` - 1, min = 0, max = max.age)), max.age)
           rates = rlnorm(input$`non-uniform-int`, log(input$`non-uniform-meanrate`), sqrt(input$`non-uniform-variance`))
+          validateRates(rates)
           v$current$fossilModelName = "Non-Uniform"
           v$current$fossils = FossilSim::sim.fossils.intervals(v$current$tree, interval.ages = v$current$int.ages, rates = rates)
         }
@@ -352,8 +361,8 @@ inputSidebarServer <- function(id, v) {
         # iv. Lineage Model --
         else if (input$tabset == listOfTabs$lindep) {
           dist = function() { rlnorm(1, log(input$`lineage-dep-LNrate`), input$`lineage-dep-LNsd`) }
-          
           rates = FossilSim::sim.trait.values(dist(), tree = v$current$tree, taxonomy = v$current$tax, model = "independent", dist = dist)
+          validateRates(rates)
           v$current$fossilModelName = "Lineage"
           v$current$fossils = FossilSim::sim.fossils.poisson(rates, tree = v$current$tree, taxonomy = v$current$tax)
         }

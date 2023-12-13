@@ -84,7 +84,7 @@ outputSidebarServer <- function(id, v, k) {
         
         # Show fossil taxonomy
         if(v$current$showtaxonomy) {
-          validate(need(!is.null(v$current$tax), "No taxomony..."))
+          validate(need(!is.null(v$current$tax), "Show taxonomy is selected but no taxonomy was found"))
         }
         
         par(oma = c(8, 0, 0, 0))
