@@ -117,8 +117,9 @@ outputSidebarServer <- function(id, v, k) {
         if (input[[paste0(v$currentTab, "dropview")]] == "tree+fossils") {
           validate(need(!is.null(v$current$fossils), "No fossils found, please simulate fossils."))
           
-          show.depth = (v$current$`enviro-dep-showsamplingproxy`) && (!is.null(v$current$fossilModelName) && v$current$fossilModelName == "Holland")
-          strata = if(v$current$showstrata && (!is.null(v$current$fossilModelName) && v$current$fossilModelName == "Holland")) v$current$strata else 1
+          is.enviro.model = !is.null(v$current$fossilModelName) && v$current$fossilModelName == "Holland"
+          show.depth = (v$current$`enviro-dep-showsamplingproxy` && is.enviro.model)
+          strata = if((v$current$showstrata || v$current$`enviro-dep-showsamplingproxy`) && is.enviro.model) v$current$strata else 1
           int.ages = if(v$current$showstrata && (!is.null(v$current$fossilModelName) && v$current$fossilModelName == "Non-Uniform")) v$current$int.ages else NULL
           
           plot(v$current$fossils,
