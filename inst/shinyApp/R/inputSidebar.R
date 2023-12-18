@@ -286,6 +286,7 @@ inputSidebarServer <- function(id, v) {
           v$current$errorMsg = "Could not read tree, please check the Newick string."
         }
         v$current$fossils = FossilSim::fossils()
+        v$current$tax = NULL # set taxonomy to NULL to avoid issues as old taxonomy will very likely not line up with a new tree
         validate(need(!v$current$error, v$current$errorMsg))
         
         session$sendCustomMessage("loading", FALSE)

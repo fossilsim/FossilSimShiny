@@ -1,3 +1,14 @@
+## Version 1.1.1
+
+### UI changes
+* "Environment-dependent" model is now called "Depth-dependent" for clarity
+* Better and more detailed error messages
+
+### Bug fixing
+* Invalid Newick strings now give an error message instead of silently failing
+* Simulating with tip number = 1 now works
+* Plot is no longer cut at the bottom on smaller screens
+
 ## Version 1.1.0
 
 #### Added Functionality

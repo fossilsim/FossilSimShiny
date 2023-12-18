@@ -1,1 +1,12 @@
 * bug in reconstructed tree w/taxonomy - filed on the FossilSim repo
+
+Feature requests (feedback from Morlon team 13/12/2023)
+- add appearance option to show the rates for the time-dependent / environment-dependent 
+- random name generator for species ? 
+- simulate traits and plot them on the tree => biogeography ? + transition points within edges
+- colours are ugly (says Jérémy) => option to choose colours possible ?
+- colour ranges are too thin when tree is big (25 tips + turnover 0.8)
+- time-dependent rates - add dropdown for different distro options ?
+- add better description of depth-dependent model (could do a "help" popup for more details on the models ?)
+- appearance buttons should not trigger automatic changes to the view - either explicit changes OR remove altogether
+- views menu might be better as radio buttons than dropdown

@@ -1,6 +1,6 @@
 Package: FossilSimShiny
 Title: Shiny Application for 'FossilSim'
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: c(person("Titouan", "Chambe", email="titouan.chambe@u-psud.fr", role=c("aut")),
     person("Joelle", "Barido-Sottani", email="joelle.barido-sottani@m4x.org",role=c("aut","cre","cph")),
     person("Rachel", "Warnock", email="rachel.warnock@fau.de", role=c("aut","cph"))
