@@ -14,7 +14,8 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Imports:
     shiny (>= 1.7.1),
-    FossilSim
+    FossilSim,
+    TreeSim
 Suggests: 
     knitr,
     rmarkdown,
