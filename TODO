@@ -20,6 +20,7 @@ Reviewer comments
 - error messages to add on top of the plot not instead of the plot => should be doable (?)
 - timescale & sampling depth too light, font too small => Fix that before sending back
 - taxonomy colours change everytime the plot is reloaded => to discuss, I think this is an issue from FossilSim
+- taxonomy colours not colourblind friendly => same as previous
 - filename for saving not specific enough => Fix that before sending back
 - save image button breaks when no plot exists => Fix that before sending back
 - sampling depth chart overlaps with tooltip area => to discuss, I think we need to reevaluate how the tooltip area works because atm it gives different results based on screen size and other details, probably need to make it a separate area in the R code but not sure how this would work with the javascript
