@@ -80,7 +80,7 @@ outputSidebarServer <- function(id, v, k) {
         validate(need(is.null(v$current$error) || !v$current$error, v$current$errorMsg))
         
         # Check if there is a tree
-        if(is.null(v$current$tree)) return()
+        if(is.null(v$current$tree)) return(NA)
         
         # Show fossil taxonomy
         if(v$current$showtaxonomy) {
@@ -233,13 +233,14 @@ outputSidebarServer <- function(id, v, k) {
       
       output$saveas <- downloadHandler(
         filename = function() {
-          if(input$imgformat == "PNG") paste0("plot-", Sys.Date(), ".png")
+          if(input$imgformat == "PNG") paste0("plot_", format(Sys.time(), "%Y-%m-%d_%Hh%Mm%Ss"), ".png")
           else paste0("plot-", Sys.Date(), ".pdf")
         },
         content = function(file) {
           if(input$imgformat == "PNG") png(file, width = 2500, height = 1500)
           else pdf(file, width = 20, height = 15)
-          replayPlot(makePlots())
+          plot = makePlots()
+          if(length(plot) > 1 || !is.na(plot)) replayPlot(plot)
           dev.off()
         })
     }

@@ -21,10 +21,12 @@ Reviewer comments
 - timescale & sampling depth too light, font too small => Fix that before sending back
 - taxonomy colours change everytime the plot is reloaded => to discuss, I think this is an issue from FossilSim
 - taxonomy colours not colourblind friendly => same as previous
-- filename for saving not specific enough => Fix that before sending back
-- save image button breaks when no plot exists => Fix that before sending back
-- sampling depth chart overlaps with tooltip area => to discuss, I think we need to reevaluate how the tooltip area works because atm it gives different results based on screen size and other details, probably need to make it a separate area in the R code but not sure how this would work with the javascript
+- sampling depth chart overlaps with tooltip area => to discuss, I think we need to reevaluate how the tooltip area works because atm it gives different results based on screen size and other details, probably need to make it a separate area in the R code but not sure how this would work with the javascript (check prompter package suggested by reviewer)
 - dark mode doesn't work for changing the colour of the plot area => May need to get Titouan to help on that one
-- more control over time intervals would be nice => to discuss what makes sense for the app
+- more control over time intervals would be nice => to discuss what makes sense for the app // user-specified intervals ?
 - change tip limit when app is run locally vs on a server => to discuss, I think auto-detection is tricky but we could use a config file to specify limits (thus the user could change them if they want), I need to look further into this
 see https://forum.posit.co/t/is-there-a-way-to-detect-if-an-app-is-running-on-shinyapps-io/20666 for autodetection (shinyapps only though)
+
+Reviewer comments (DONE)
+- save image button breaks when no plot exists
+- filename for saving not specific enough => changed to date + time
