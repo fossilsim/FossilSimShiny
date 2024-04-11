@@ -119,11 +119,14 @@ inputSidebarUI <- function(id) {
                            # ii. Non-uniform Distribution --
                            tabPanel(p("Time-dependent", id = ns("non-uniform")),
                                     HTML("</br>"),
-                                    sliderInput(inputId = ns("non-uniform-int"),
-                                                label = "Number of intervals",
-                                                value = 1,
-                                                min = 0,
-                                                max = 10 ),
+                                    selectInput(ns("nonUniformType"), label = "Interval type", choices = c("random", "even", "user-defined")),
+                                    
+                                    conditionalPanel("input.nonUniformType == 'random' || input.nonUniformType == 'even'",
+                                                     sliderInput(inputId = ns("non-uniform-int"), label = "Number of intervals", value = 1, min = 0, max = 10 ), 
+                                                     ns = ns),
+                                    conditionalPanel("input.nonUniformType == 'user-defined'",
+                                                     textInput(inputId = ns("non-uniform-bounds"), label = "Interval bounds (delimited by /)"), 
+                                                     ns = ns),
                                     
                                     numericInput(inputId = ns("non-uniform-meanrate"),
                                                  label = "Mean sampling rate",
@@ -344,8 +347,18 @@ inputSidebarServer <- function(id, v) {
         # ii. Non-Uniform Distribution --
         else if (input$tabset == listOfTabs$timedep) {
           max.age = FossilSim::tree.max(v$current$tree)
-          v$current$int.ages = c(0, sort(runif(input$`non-uniform-int` - 1, min = 0, max = max.age)), max.age)
-          rates = rlnorm(input$`non-uniform-int`, log(input$`non-uniform-meanrate`), sqrt(input$`non-uniform-variance`))
+          
+          if(input$nonUniformType == "random") {
+            v$current$int.ages = c(0, sort(runif(input$`non-uniform-int` - 1, min = 0, max = max.age)), max.age)
+          } else if(input$nonUniformType == "even") {
+            v$current$int.ages = seq(0, max.age, length.out = input$`non-uniform-int` + 1)
+          } else if(input$nonUniformType == "user-defined") {
+            v$current$int.ages = sort(as.numeric(strsplit(input$`non-uniform-bounds`, "/")[[1]]))
+            if(v$current$int.ages[1] > 0) v$current$int.ages = c(0, v$current$int.ages)
+            if(v$current$int.ages[length(v$current$int.ages)] < max.age) v$current$int.ages = c(v$current$int.ages, max.age)
+          }
+            
+          rates = rlnorm(length(v$current$int.ages) - 1, log(input$`non-uniform-meanrate`), sqrt(input$`non-uniform-variance`))
           validateRates(rates)
           v$current$fossilModelName = "Non-Uniform"
           v$current$fossils = FossilSim::sim.fossils.intervals(v$current$tree, interval.ages = v$current$int.ages, rates = rates)

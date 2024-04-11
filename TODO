@@ -21,7 +21,6 @@ Reviewer comments
 - taxonomy colours not colourblind friendly => same as previous
 - sampling depth chart overlaps with tooltip area => to discuss, I think we need to reevaluate how the tooltip area works because atm it gives different results based on screen size and other details, probably need to make it a separate area in the R code but not sure how this would work with the javascript (check prompter package suggested by reviewer)
 - dark mode doesn't work for changing the colour of the plot area => May need to get Titouan to help on that one
-- more control over time intervals would be nice => to discuss what makes sense for the app // user-specified intervals ?
 - change tip limit when app is run locally vs on a server => to discuss, I think auto-detection is tricky but we could use a config file to specify limits (thus the user could change them if they want), I need to look further into this
 see https://forum.posit.co/t/is-there-a-way-to-detect-if-an-app-is-running-on-shinyapps-io/20666 for autodetection (shinyapps only though)
 
@@ -30,3 +29,4 @@ Reviewer comments (DONE)
 - filename for saving not specific enough => changed to date + time
 - default lineage-dependent settings often break, better defaults needed
 - add buttons to clear fossils or taxonomy without restarting the whole thing
+- more control over time intervals would be nice => added evenly-spread intervals and user-specified intervals

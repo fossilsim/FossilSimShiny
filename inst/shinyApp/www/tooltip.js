@@ -23,7 +23,9 @@ var tooltip_dict = {
 	
 	"uniform-psi" :			 "Set the uniform fossil sampling rate, commonly to referred as Ψ.",
 	
+	"nonUniformType" :      "Select how to define time intervals (at random, spread evenly on the length of the tree, or defined by the user)",
 	"non-uniform-int" :		 "Set the number of time intervals for the fossil sampling rate.",
+	"non-uniform-bounds" :  "Set the interval bounds for the fossil sampling rate (delimited by /).",
 	"non-uniform-meanrate" : "Set the mean fossil sampling rate across all intervals.",
 	"non-uniform-variance" : "Set the variance of the fossil sampling rates across all intervals.",
 	
