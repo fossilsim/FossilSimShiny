@@ -234,7 +234,7 @@ outputSidebarServer <- function(id, v, k) {
       output$saveas <- downloadHandler(
         filename = function() {
           if(input$imgformat == "PNG") paste0("plot_", format(Sys.time(), "%Y-%m-%d_%Hh%Mm%Ss"), ".png")
-          else paste0("plot-", Sys.Date(), ".pdf")
+          else paste0("plot_", format(Sys.time(), "%Y-%m-%d_%Hh%Mm%Ss"), ".pdf")
         },
         content = function(file) {
           if(input$imgformat == "PNG") png(file, width = 2500, height = 1500)

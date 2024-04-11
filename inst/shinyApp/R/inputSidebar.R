@@ -85,6 +85,7 @@ inputSidebarUI <- function(id) {
                             max = 10 ),
                
                actionButton(ns("simtax"), "Simulate taxonomy"),
+               actionButton(ns("cleartax"), "Clear taxonomy"),
                
       ),
       # ---<
@@ -172,12 +173,12 @@ inputSidebarUI <- function(id) {
                                     HTML("</br>"),
                                     numericInput(inputId = ns("lineage-dep-LNrate"),
                                                  label = "Mean rate",
-                                                 value = 2,
-                                                 min = 1,
-                                                 max = 5 ),
+                                                 value = 0.5,
+                                                 min = -10,
+                                                 max = 3 ),
                                     numericInput(inputId = ns("lineage-dep-LNsd"),
                                                  label = "Standard deviation",
-                                                 value = 1,
+                                                 value = 0.7,
                                                  min = 0,
                                                  max = 5 ),
                            ),
@@ -187,7 +188,7 @@ inputSidebarUI <- function(id) {
                ),
                
                actionButton(ns("simfossils"), "Simulate fossils"),
-               
+               actionButton(ns("clearfossils"), "Clear fossils"),
       ),
       # ---<
       HTML("</br> </br> </br> </br> </br> </br>"),
@@ -308,6 +309,12 @@ inputSidebarServer <- function(id, v) {
         session$sendCustomMessage("loading", FALSE)
       })
       
+      # Clear taxonomy
+      observeEvent(input$cleartax, {
+        v$current$tax = NULL
+      })
+      
+      # Check that fossilization rates are not too high
       validateRates = function(rates) {
         if(any(rates > 10)) {
           v$current$error = TRUE
@@ -373,8 +380,14 @@ inputSidebarServer <- function(id, v) {
         
       })
       
+      # Clear fossils
+      observeEvent(input$clearfossils, {
+        v$current$fossils = FossilSim::fossils()
+      })
+      
+      # download simulated data as RData
       output$dldata <- downloadHandler(
-        filename = function() {paste0("data-", Sys.Date(), ".RData")},
+        filename = function() {paste0("data-", format(Sys.time(), "%Y-%m-%d_%Hh%Mm%Ss"), ".RData")},
         content = function(file) {
           data = list(tree = v$current$tree, taxonomy = v$current$tax, fossils = v$current$fossils)
           save(data, file = file)

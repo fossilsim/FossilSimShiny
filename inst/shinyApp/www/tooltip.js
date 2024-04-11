@@ -6,14 +6,15 @@ var tooltip_dict = {
 	"lambda" :               "Set the birth rate, commonly referred to as λ. A birth event corresponds to the appearance of a new lineage in the tree.",
 	"mu" :                   "Set the death rate, commonly referred to as µ. A death event corresponds to the disappearance of a lineage from the tree.",
 	"tips" :                 "Set the number of extant tips at the end of the tree.",
-	"simtree" :              "Click here to simulate a tree.",
+	"simtree" :              "Simulate a tree.",
 	
 	"newick" :               "Import your tree in this text box, make sure it's in the Newick format.",
-	"usertree" :             "Click here to import the user tree.",
+	"usertree" :             "Import the user tree from the given Newick string.",
 	
 	"taxonomybeta":          "Set the probability that any birth event is a bifurcating speciation (as opposed to a budding speciation).",
 	"taxonomylambda":        "Set the rate of anagenetic speciation.",
-	"simtax":                "Click here to simulate the taxonomy.",	
+	"simtax":                "Simulate the taxonomy.",
+	"cleartax":              "Removed the simulated taxonomy - this cannot be reversed!",
 	
 	"uniform":               "Uniform fossil sampling (with constant rate across the tree).",
 	"non-uniform":           "Piecewise-constant (=skyline) time-dependent fossil sampling. Rates are drawn for each interval from a lognormal distribution.",
@@ -34,7 +35,8 @@ var tooltip_dict = {
 	"lineage-dep-LNrate" :	 "Set the mean fossil sampling rate across all lineages.",
 	"lineage-dep-LNsd" : 	 "Set the standard deviation of the fossil sampling rates across all lineages.",
 	
-	"simfossils":            "Click here to simulate fossil specimens.",
+	"simfossils":            "Simulate fossil specimens.",
+	"clearfossils":          "Remove the simulated fossil specimens - this cannot be reversed!",
 	
 	"showtree":              "Show/hide the tree.",
 	"showtaxonomy":          "Show/hide the fossil taxonomy.",

@@ -12,11 +12,9 @@ Feature requests (feedback from Morlon team 13/12/2023)
 - views menu might be better as radio buttons than dropdown
 
 Reviewer comments 
-- add buttons to clear fossils or taxonomy without restarting the whole thing => should be doable
 - do a better job of linking plot options to the selected plot / simulated data => to discuss - unfortunately, may need a rewrite of the architecture for that (aka porting plot options to the other side of the UI // or just getting rid of the whole separation altogether erk)
 - add timer for simulations => should be doable
 - add counts for simulations - # of fossils, # of events of each type (budding, anagenetic etc) => should be doable
-- default lineage-dependent settings often break, better defaults needed => Fix that before sending back
 - error messages to add on top of the plot not instead of the plot => should be doable (?)
 - timescale & sampling depth too light, font too small => Fix that before sending back
 - taxonomy colours change everytime the plot is reloaded => to discuss, I think this is an issue from FossilSim
@@ -30,3 +28,5 @@ see https://forum.posit.co/t/is-there-a-way-to-detect-if-an-app-is-running-on-sh
 Reviewer comments (DONE)
 - save image button breaks when no plot exists
 - filename for saving not specific enough => changed to date + time
+- default lineage-dependent settings often break, better defaults needed
+- add buttons to clear fossils or taxonomy without restarting the whole thing
