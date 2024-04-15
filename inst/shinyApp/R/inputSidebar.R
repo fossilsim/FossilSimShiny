@@ -262,10 +262,13 @@ inputSidebarServer <- function(id, v) {
         }
         validate(need(!v$current$error, v$current$errorMsg))
         
+        initial.time = Sys.time()
         repeat {
           v$current$tree = try(TreeSim::sim.bd.taxa(input$tips, 1, input$lambda, input$mu)[[1]])
           if(class(v$current$tree) != "try-error") break
         }
+        v$current$status = list(timing = Sys.time() - initial.time, msg = "")
+        
         v$current$fossils = FossilSim::fossils()
         v$current$tax = NULL # set taxonomy to NULL to avoid issues as old taxonomy will very likely not line up with a new tree
         
@@ -289,6 +292,8 @@ inputSidebarServer <- function(id, v) {
           v$current$error = TRUE
           v$current$errorMsg = "Could not read tree, please check the Newick string."
         }
+        v$current$status = list(timing = -1, msg = "")
+        
         v$current$fossils = FossilSim::fossils()
         v$current$tax = NULL # set taxonomy to NULL to avoid issues as old taxonomy will very likely not line up with a new tree
         validate(need(!v$current$error, v$current$errorMsg))
@@ -305,9 +310,15 @@ inputSidebarServer <- function(id, v) {
         }
         validate(need(!v$current$error, v$current$errorMsg))
         
+        initial.time = Sys.time()
         v$current$tax = FossilSim::sim.taxonomy(tree = v$current$tree, input$taxonomybeta, input$taxonomylambda)
         if(!attr(v$current$fossils, "from.taxonomy")) v$current$fossils = FossilSim::reconcile.fossils.taxonomy(v$current$fossils, v$current$tax)
         else v$current$fossils = FossilSim::fossils()
+        
+        tmp = v$current$tax[, c("sp", "mode")]
+        event_counts = table(tmp[!duplicated(tmp),]$mode)
+        v$current$status = list(timing = Sys.time() - initial.time, 
+                                msg = paste("Simulated:", event_counts["a"], "anagenetic events,", event_counts["b"], "budding events and", event_counts["s"]/2, "bifurcating events"))
         
         session$sendCustomMessage("loading", FALSE)
       })
@@ -336,6 +347,7 @@ inputSidebarServer <- function(id, v) {
         validate(need(!v$current$error, v$current$errorMsg))
         
         # Here we check which fossil sim tab is selected and simulate fossils
+        initial.time = Sys.time()
         
         # i. Uniform Distribution --
         if(input$tabset == listOfTabs$unif) {
@@ -388,6 +400,9 @@ inputSidebarServer <- function(id, v) {
           v$current$fossils = FossilSim::sim.fossils.poisson(rates, tree = v$current$tree, taxonomy = v$current$tax)
         }
         # --<
+        
+        v$current$status = list(timing = Sys.time() - initial.time, 
+                                msg = paste("Simulated:", nrow(v$current$fossils), "fossil samples"))
         
         session$sendCustomMessage("loading", FALSE)
         
