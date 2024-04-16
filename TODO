@@ -31,4 +31,5 @@ Reviewer comments (DONE)
 - more control over time intervals would be nice => added evenly-spread intervals and user-specified intervals
 - add timer for simulations
 - add counts for simulations - # of fossils, # of events of each type (budding, anagenetic etc)
-- default tooltip text added
+- default tooltip text added (potentially as work-around before a better fix)
+- added description of requirements for plotting options as work-around before a better fix

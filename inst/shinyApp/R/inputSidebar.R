@@ -204,13 +204,13 @@ inputSidebarUI <- function(id) {
                HTML("</br>"),
                
                checkboxInput(inputId = ns("showtree"), "Show tree", value = TRUE),
-               checkboxInput(inputId = ns("showtaxonomy"), "Show taxonomy", value = FALSE),
-               checkboxInput(inputId = ns("showfossils"), "Show all occurrences", value = TRUE),
-               checkboxInput(inputId = ns("showranges"), "Show ranges", value = FALSE),
-               checkboxInput(inputId = ns("showstrata"), "Show strata", value = FALSE),
+               checkboxInput(inputId = ns("showtaxonomy"), "Show fossil taxonomy - (requires simulated taxonomy and fossils)", value = FALSE),
+               checkboxInput(inputId = ns("showfossils"), "Show all occurrences - (requires simulated fossils)", value = TRUE),
+               checkboxInput(inputId = ns("showranges"), "Show ranges - (requires simulated fossils)", value = FALSE),
+               checkboxInput(inputId = ns("showstrata"), "Show strata used in simulating fossils", value = FALSE),
                checkboxInput(inputId = ns("showtips"), "Show tip labels", value = FALSE),
                checkboxInput(inputId = ns("reconstructed"), "Show reconstructed tree", value = FALSE),
-               checkboxInput(inputId = ns("enviro-dep-showsamplingproxy"), "Show depth used in sampling", value = FALSE),
+               checkboxInput(inputId = ns("enviro-dep-showsamplingproxy"), "Show depth (requires fossils under a depth-dependent model)", value = FALSE),
                
       ),
       # ---<
