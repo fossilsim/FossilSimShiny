@@ -92,6 +92,6 @@ function setTooltip(key) {
 
 // Function that clears the tooltip, to be called when the mouse leaves the element
 function clearTooltip() {
-	tooltip.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;ℹ : ";
+	tooltip.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;ℹ : hover over any option to see more details";
 }
 
