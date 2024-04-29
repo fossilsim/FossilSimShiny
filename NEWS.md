@@ -1,3 +1,17 @@
+## Version 1.1.2
+
+### Added Functionality
+* Added more options for setting time intervals in time-dependent fossil sampling
+* Added buttons to clear specific parts of the simulation
+* Simulation functions now print information about the time spent and events simulated
+
+### UI changes
+* Font size and colour of the time and depth axis have been updated to make the axis more visible.
+
+### Bug fixing
+* Saving the plot no longer breaks when no data is present (instead a blank plot is saved)
+* Taxonomy colours no longer change every time the plot is updated
+
 ## Version 1.1.1
 
 ### UI changes

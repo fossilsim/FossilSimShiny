@@ -14,9 +14,6 @@ Feature requests (feedback from Morlon team 13/12/2023)
 Reviewer comments 
 - do a better job of linking plot options to the selected plot / simulated data => to discuss - unfortunately, may need a rewrite of the architecture for that (aka porting plot options to the other side of the UI // or just getting rid of the whole separation altogether erk)
 - error messages to add on top of the plot not instead of the plot => should be doable (?)
-- timescale & sampling depth too light, font too small => Fix that before sending back
-- taxonomy colours change everytime the plot is reloaded => to discuss, I think this is an issue from FossilSim
-- taxonomy colours not colourblind friendly => same as previous
 - sampling depth chart overlaps with tooltip area => to discuss, I think we need to reevaluate how the tooltip area works because atm it gives different results based on screen size and other details, probably need to make it a separate area in the R code but not sure how this would work with the javascript
 - dark mode doesn't work for changing the colour of the plot area => May need to get Titouan to help on that one
 - change tip limit when app is run locally vs on a server => to discuss, I think auto-detection is tricky but we could use a config file to specify limits (thus the user could change them if they want), I need to look further into this
@@ -33,3 +30,6 @@ Reviewer comments (DONE)
 - add counts for simulations - # of fossils, # of events of each type (budding, anagenetic etc)
 - default tooltip text added (potentially as work-around before a better fix)
 - added description of requirements for plotting options as work-around before a better fix
+- taxonomy colours change everytime the plot is reloaded
+- taxonomy colours not colourblind friendly
+- timescale & sampling depth too light, font too small
