@@ -51,8 +51,8 @@ var tooltip_dict = {
 	
 	"saveas":                "Save the current tab as an image, you can also just simply right click on the image and select save as.",
 	"imgformat":			 "Image format to save as.",
-	"dldata":				 "Download the simulated tree, taxonomy and fossils as RData."
-	
+	"dldata":				 "Download the simulated tree, taxonomy and fossils as RData.",
+	"outputTabset":   "Change between tabs (i), (ii), etc. or create a new tab with the (+) button"
 };
 
 // Clear tooltip on page load
