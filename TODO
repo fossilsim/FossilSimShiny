@@ -8,7 +8,7 @@ Feature requests (feedback from Morlon team 13/12/2023)
 - colour ranges are too thin when tree is big (25 tips + turnover 0.8)
 - time-dependent rates - add dropdown for different distro options ?
 - add better description of depth-dependent model (could do a "help" popup for more details on the models ?)
-- appearance buttons should not trigger automatic changes to the view - either explicit changes OR remove altogether
+- appearance buttons should not trigger automatic changes to the view - either explicit changes OR remove altogether => add better controls for dropdown explicitly tied to simulation not to the objects
 - views menu might be better as radio buttons than dropdown
 
 Reviewer comments 
