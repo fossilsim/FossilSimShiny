@@ -4,7 +4,6 @@ Feature requests (feedback from Morlon team 13/12/2023)
 - add appearance option to show the rates for the time-dependent / environment-dependent 
 - random name generator for species ? 
 - simulate traits and plot them on the tree => biogeography ? + transition points within edges
-- colours are ugly (says Jérémy) => option to choose colours possible ?
 - colour ranges are too thin when tree is big (25 tips + turnover 0.8)
 - time-dependent rates - add dropdown for different distro options ?
 - add better description of depth-dependent model (could do a "help" popup for more details on the models ?)
@@ -20,16 +19,7 @@ Reviewer comments
 see https://forum.posit.co/t/is-there-a-way-to-detect-if-an-app-is-running-on-shinyapps-io/20666 for autodetection (shinyapps only though)
 - tooltip is not visible enough, maybe make it pop up at the cursor (check prompter package suggested by reviewer) => see later
 
-Reviewer comments (DONE)
-- save image button breaks when no plot exists
-- filename for saving not specific enough => changed to date + time
-- default lineage-dependent settings often break, better defaults needed
-- add buttons to clear fossils or taxonomy without restarting the whole thing
-- more control over time intervals would be nice => added evenly-spread intervals and user-specified intervals
-- add timer for simulations
-- add counts for simulations - # of fossils, # of events of each type (budding, anagenetic etc)
-- default tooltip text added (potentially as work-around before a better fix)
-- added description of requirements for plotting options as work-around before a better fix
-- taxonomy colours change everytime the plot is reloaded
-- taxonomy colours not colourblind friendly
-- timescale & sampling depth too light, font too small
+Other feature requests
+- add rho argument for the reconstructed tree
+- allow data to be imported from RData
+- allow several tabs to share the tree
