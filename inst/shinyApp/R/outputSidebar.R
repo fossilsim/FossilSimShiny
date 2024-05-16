@@ -59,7 +59,7 @@ outputSidebar <- function(id) {
 
 # Server code --- ---
 outputSidebarServer <- function(id, v, k) {
-  moduleServer(
+  shiny::moduleServer(
     id,
     
     function(input, output, session) {

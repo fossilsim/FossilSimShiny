@@ -57,7 +57,7 @@ inputSidebarUI <- function(id) {
                textInput(inputId = ns("newick"), "User tree",
                          value = "Enter newick string..."),
                
-               actionButton(ns("usertree"), "Import tree"),
+               actionButton(ns("usertree"), "Import tree")
                
       ),
       # ---<
@@ -85,7 +85,7 @@ inputSidebarUI <- function(id) {
                             max = 10 ),
                
                actionButton(ns("simtax"), "Simulate taxonomy"),
-               actionButton(ns("cleartax"), "Clear taxonomy"),
+               actionButton(ns("cleartax"), "Clear taxonomy")
                
       ),
       # ---<
@@ -167,7 +167,7 @@ inputSidebarUI <- function(id) {
                                                  label = "Peak abundance (PA)",
                                                  value = 1,
                                                  min = 0,
-                                                 max = 10 ),
+                                                 max = 10 )
                            ),
                            # --<
                            
@@ -183,15 +183,15 @@ inputSidebarUI <- function(id) {
                                                  label = "Standard deviation",
                                                  value = 0.7,
                                                  min = 0,
-                                                 max = 5 ),
-                           ),
+                                                 max = 5 )
+                           )
                            
                            # --<
                            
                ),
                
                actionButton(ns("simfossils"), "Simulate fossils"),
-               actionButton(ns("clearfossils"), "Clear fossils"),
+               actionButton(ns("clearfossils"), "Clear fossils")
       ),
       # ---<
       HTML("</br> </br> </br> </br> </br> </br>"),
@@ -210,7 +210,7 @@ inputSidebarUI <- function(id) {
                checkboxInput(inputId = ns("showstrata"), "Show strata used in simulating fossils", value = FALSE),
                checkboxInput(inputId = ns("showtips"), "Show tip labels", value = FALSE),
                checkboxInput(inputId = ns("reconstructed"), "Show reconstructed tree", value = FALSE),
-               checkboxInput(inputId = ns("enviro-dep-showsamplingproxy"), "Show depth (requires fossils under a depth-dependent model)", value = FALSE),
+               checkboxInput(inputId = ns("enviro-dep-showsamplingproxy"), "Show depth (requires fossils under a depth-dependent model)", value = FALSE)
                
       ),
       # ---<
@@ -233,7 +233,7 @@ inputSidebarUI <- function(id) {
 
 # Server code --- ---
 inputSidebarServer <- function(id, v) {
-  moduleServer(
+  shiny::moduleServer(
     id,
     
     function(input, output, session) {
