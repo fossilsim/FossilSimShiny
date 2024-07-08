@@ -272,6 +272,8 @@ inputSidebarServer <- function(id, v) {
         v$current$fossils = FossilSim::fossils()
         v$current$tax = NULL # set taxonomy to NULL to avoid issues as old taxonomy will very likely not line up with a new tree
         
+        v$current$changeDropdown = "tree"
+        
         session$sendCustomMessage("loading", FALSE)
       })
       
@@ -298,6 +300,8 @@ inputSidebarServer <- function(id, v) {
         v$current$tax = NULL # set taxonomy to NULL to avoid issues as old taxonomy will very likely not line up with a new tree
         validate(need(!v$current$error, v$current$errorMsg))
         
+        v$current$changeDropdown = "tree"
+        
         session$sendCustomMessage("loading", FALSE)
       })
       
@@ -319,6 +323,7 @@ inputSidebarServer <- function(id, v) {
         event_counts = table(tmp[!duplicated(tmp),]$mode)
         v$current$status = list(timing = Sys.time() - initial.time, 
                                 msg = paste("Simulated:", event_counts["a"], "anagenetic events,", event_counts["b"], "budding events and", event_counts["s"]/2, "bifurcating events"))
+        v$current$changeDropdown = "taxonomy"
         
         session$sendCustomMessage("loading", FALSE)
       })
@@ -403,6 +408,7 @@ inputSidebarServer <- function(id, v) {
         
         v$current$status = list(timing = Sys.time() - initial.time, 
                                 msg = paste("Simulated:", nrow(v$current$fossils), "fossil samples"))
+        v$current$changeDropdown = "tree+fossils"
         
         session$sendCustomMessage("loading", FALSE)
         

@@ -89,6 +89,11 @@ outputSidebarServer <- function(id, v, k) {
           validate(need(!is.null(v$current$tax), "Show taxonomy is selected but no taxonomy was found"))
         }
         
+        if(!is.null(v$current$changeDropdown)) {
+          updateSelectInput(session, paste0(v$currentTab, "dropview"), selected = v$current$changeDropdown)
+          v$current$changeDropdown = NULL
+        }
+        
         par(oma = c(8, 0, 0, 0))
         # View 1) tree : display tree with empty fossils
         if (input[[paste0(v$currentTab, "dropview")]] == "tree"){
@@ -162,26 +167,6 @@ outputSidebarServer <- function(id, v, k) {
         # in reality only $current plot will ever be changed
         output[[paste0(k,"tree")]] <- renderPlot({ makePlots() })
       }
-      
-      # Dropdown/View selector ----
-      # Priority is very important (last to first)
-      # First is the tree view which gets triggered when the tree data is changed, ie : when the user simulates a tree 
-      observeEvent(v$current$tree, {
-        updateSelectInput(session, paste0(v$currentTab, "dropview"), selected = "tree")
-      })
-      # Second is the taxonomy view, same mechanism
-      observeEvent(v$current$tax, {
-        if (!is.null(v$current$tax) && all(v$current$tree$edge %in% v$current$tax$edge)) {
-          updateSelectInput(session, paste0(v$currentTab, "dropview"), selected = "taxonomy")
-        }
-      })
-      # Last is the fossil+tree view
-      observeEvent(v$current$fossils, {
-        if (length(v$current$fossils$sp) != 0) {
-          updateSelectInput(session, paste0(v$currentTab, "dropview"), selected = "tree+fossils")
-        }
-      })
-      
       
       # Change/create new tabs ---
       observeEvent(input$outputTabset, {
