@@ -321,6 +321,11 @@ inputSidebarServer <- function(id, v) {
         
         tmp = v$current$tax[, c("sp", "mode")]
         event_counts = table(tmp[!duplicated(tmp),]$mode)
+        # add count of zero for events which don't appear in the tree
+        for(event in c("a", "b", "s")) {
+          if(!event %in% names(event_counts)) event_counts[event] = 0
+        }
+      
         v$current$status = list(timing = Sys.time() - initial.time, 
                                 msg = paste("Simulated:", event_counts["a"], "anagenetic events,", event_counts["b"], "budding events and", event_counts["s"]/2, "bifurcating events"))
         v$current$changeDropdown = "taxonomy"
